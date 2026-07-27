@@ -1,0 +1,68 @@
+<main class="min-h-screen bg-[#06090e] text-white pt-20 pb-16">
+  <!-- 🎨 MASTER UNIFIED WORKSPACE HEADER -->
+  <div class="max-w-[1600px] mx-auto px-4 mb-6">
+    <div class="bg-gradient-to-r from-slate-900 via-[#0e1524] to-slate-900 border border-red-600/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+      <!-- Glow effect -->
+      <div class="absolute -right-20 -top-20 w-64 h-64 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+        <!-- Title & Badge -->
+        <div class="flex items-center gap-4 text-center lg:text-left">
+          <a href="https://www.tracersmec.com" target="_blank" class="hidden sm:flex items-center gap-2 text-gray-300 hover:text-white transition-colors px-4 py-2.5 bg-slate-800/80 hover:bg-slate-800 rounded-xl border border-slate-700/60 shadow-md shrink-0 text-xs font-bold uppercase tracking-wider" title="Back to Official Website">
+            <span>🌐 Back to Website</span>
+          </a>
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-red-600/30 to-red-900/40 text-red-500 font-bold text-3xl border border-red-500/40 shadow-xl shrink-0">
+            🎨
+          </div>
+          <div>
+            <div class="flex items-center justify-center lg:justify-start gap-2.5 flex-wrap mb-1">
+              <h1 class="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+                T-Racers Media Studio
+              </h1>
+              <span class="bg-gradient-to-r from-red-600 to-red-700 text-white text-[11px] font-black px-3 py-0.5 rounded-full uppercase tracking-widest shadow-lg shadow-red-600/30 animate-pulse border border-red-400/30">
+                ALL-IN-ONE SUITE
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-xl">
+              Official Formula Student Social Media, Broadcast Graphics & Transparent Livery Production Engine. Everything you need in one single workspace.
+            </p>
+          </div>
+        </div>
+
+        <!-- 🚀 INSTANT TAB SWITCHER (NO PAGE RELOADS, NO SEPARATE TOOLS) -->
+        <div class="flex items-center gap-2 bg-slate-950/90 p-2 rounded-2xl border border-slate-800 shadow-2xl w-full lg:w-auto">
+          <button (click)="switchTool('suite')" 
+                  [class]="activeTool() === 'suite' ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/40 font-bold border-red-500' : 'text-slate-400 hover:text-white hover:bg-slate-900/80 font-medium border-transparent'"
+                  class="flex-1 lg:flex-none px-5 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2.5 border">
+            <span class="text-lg">🏆</span>
+            <div class="text-left">
+              <div class="leading-none">Social Media Suite</div>
+              <div class="text-[10px] opacity-75 font-normal mt-0.5">Posts, Stories & Carousels</div>
+            </div>
+          </button>
+          
+          <button (click)="switchTool('frame')" 
+                  [class]="activeTool() === 'frame' ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-600/40 font-bold border-cyan-500' : 'text-slate-400 hover:text-white hover:bg-slate-900/80 font-medium border-transparent'"
+                  class="flex-1 lg:flex-none px-5 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2.5 border">
+            <span class="text-lg">🖼️</span>
+            <div class="text-left">
+              <div class="leading-none">Livery & Frame Studio</div>
+              <div class="text-[10px] opacity-75 font-normal mt-0.5">Transparent PNG Overlays</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎯 EMBEDDED WORKSPACE (BOTH IN 1 PLACE) -->
+  <div class="max-w-[1600px] mx-auto">
+    <div [class.hidden]="activeTool() !== 'suite'">
+      <app-achievement-generator [isEmbedded]="true"></app-achievement-generator>
+    </div>
+    <div [class.hidden]="activeTool() !== 'frame'">
+      <app-frame-generator [isEmbedded]="true"></app-frame-generator>
+    </div>
+  </div>
+</main>

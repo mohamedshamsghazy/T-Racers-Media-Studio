@@ -1,0 +1,1472 @@
+<main [class]="isEmbedded() ? 'w-full text-white' : 'min-h-screen bg-[#06090e] text-white pt-20 pb-10'">
+  <div class="max-w-[1600px] mx-auto px-4">
+    @if (!isEmbedded()) {
+      <!-- 🎨 UNIFIED T-RACERS MEDIA SUITE HUB SWITCHER -->
+      <div class="bg-gradient-to-r from-slate-900 via-[#0e1524] to-slate-900 border border-red-600/40 rounded-2xl p-3 mb-8 shadow-2xl flex items-center justify-between gap-4 flex-wrap">
+        <div class="flex items-center gap-3 px-2">
+          <a routerLink="/" class="text-gray-400 hover:text-white transition-colors p-1.5 hover:bg-slate-800 rounded-lg" title="Back to Home">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </a>
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-600/20 text-red-500 font-bold text-xl border border-red-500/30">🎨</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg font-black text-white uppercase tracking-wider">T-Racers Media Suite</h1>
+              <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Studio 2.0</span>
+            </div>
+            <p class="text-xs text-gray-400">Official Social Media, Broadcast & Livery Frame Studio</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 bg-slate-950/90 p-1.5 rounded-xl border border-slate-800 shadow-inner">
+          <a routerLink="/achievement-generator" routerLinkActive="bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/40 font-bold border-red-500" class="px-4 py-2 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-2 border border-transparent">
+            <span class="text-base">🏆</span>
+            <span>Posts & Carousels (9-in-1 Suite)</span>
+          </a>
+          <a routerLink="/frame-generator" routerLinkActive="bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/40 font-bold border-red-500" class="px-4 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-slate-900 transition-all flex items-center gap-2 border border-transparent">
+            <span class="text-base">🖼️</span>
+            <span>Profile & Video Frames</span>
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- 🌟 Creative Mode Switcher (6 Modes) -->
+    <div class="bg-gradient-to-r from-slate-900 via-[#0a0f18] to-slate-900 rounded-2xl border border-red-600/30 p-4 mb-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800/80 flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-3 h-3 rounded-full bg-red-600 animate-pulse"></span>
+          <span class="text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">T-Racers Creative Studio</span>
+        </div>
+        <span class="text-xs text-gray-400">Select content template to switch sidebar controls & layout</span>
+      </div>
+      
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2.5">
+        <button (click)="studioMode.set('achievements'); drawCanvas()" 
+          [class]="studioMode() === 'achievements' ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30 border-red-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🏆</span>
+          <span class="text-xs font-bold uppercase">Achievements</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Race & Event Results</span>
+        </button>
+
+        <button (click)="studioMode.set('hiring'); drawCanvas()" 
+          [class]="studioMode() === 'hiring' ? 'bg-gradient-to-r from-cyan-600 to-blue-700 text-white shadow-lg shadow-cyan-600/30 border-cyan-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">📢</span>
+          <span class="text-xs font-bold uppercase">Recruitment</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">We Are Hiring / Join</span>
+        </button>
+
+        <button (click)="studioMode.set('sponsor'); drawCanvas()" 
+          [class]="studioMode() === 'sponsor' ? 'bg-gradient-to-r from-amber-600 to-yellow-600 text-white shadow-lg shadow-amber-600/30 border-amber-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🤝</span>
+          <span class="text-xs font-bold uppercase">Partnership</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Sponsor Spotlight</span>
+        </button>
+
+        <button (click)="studioMode.set('occasion'); drawCanvas()" 
+          [class]="studioMode() === 'occasion' ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-600/30 border-emerald-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🌙</span>
+          <span class="text-xs font-bold uppercase">Occasions</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Eid & National Days</span>
+        </button>
+
+        <button (click)="studioMode.set('reveal'); drawCanvas()" 
+          [class]="studioMode() === 'reveal' ? 'bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-lg shadow-purple-600/30 border-purple-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🏎️</span>
+          <span class="text-xs font-bold uppercase">Car Reveal</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Teasers & Launch</span>
+        </button>
+
+        <button (click)="studioMode.set('tech'); drawCanvas()" 
+          [class]="studioMode() === 'tech' ? 'bg-gradient-to-r from-blue-600 to-sky-700 text-white shadow-lg shadow-blue-600/30 border-blue-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">⚙️</span>
+          <span class="text-xs font-bold uppercase">Tech Spec</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Engineering & Parts</span>
+        </button>
+
+        <button (click)="studioMode.set('spotlight'); drawCanvas()" 
+          [class]="studioMode() === 'spotlight' ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-lg shadow-rose-600/30 border-rose-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">💡</span>
+          <span class="text-xs font-bold uppercase">Spotlight</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Quotes & Members</span>
+        </button>
+
+        <button (click)="studioMode.set('telemetry'); drawCanvas()" 
+          [class]="studioMode() === 'telemetry' ? 'bg-gradient-to-r from-cyan-600 to-teal-700 text-white shadow-lg shadow-cyan-600/30 border-cyan-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">📈</span>
+          <span class="text-xs font-bold uppercase">Telemetry</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Performance & Data</span>
+        </button>
+
+        <button (click)="studioMode.set('schedule'); drawCanvas()" 
+          [class]="studioMode() === 'schedule' ? 'bg-gradient-to-r from-amber-600 to-orange-700 text-white shadow-lg shadow-amber-600/30 border-amber-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
+          <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">📅</span>
+          <span class="text-xs font-bold uppercase">Schedule</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Timetable & Live</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Ultimate Studio Toolbar -->
+    <div class="bg-[#0a0f18] rounded-xl border border-slate-800 p-4 mb-6 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+      <!-- Aspect Ratios -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-1">Format:</span>
+        <button (click)="canvasFormat.set('square'); drawCanvas()" [class.bg-red-600]="canvasFormat() === 'square'" [class.bg-slate-800]="canvasFormat() !== 'square'" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500/80 transition-colors flex items-center gap-1.5">
+          <span>⏹️ 1:1 Square</span>
+        </button>
+        <button (click)="canvasFormat.set('story'); drawCanvas()" [class.bg-red-600]="canvasFormat() === 'story'" [class.bg-slate-800]="canvasFormat() !== 'story'" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500/80 transition-colors flex items-center gap-1.5">
+          <span>📱 9:16 Story</span>
+        </button>
+        <button (click)="canvasFormat.set('landscape'); drawCanvas()" [class.bg-red-600]="canvasFormat() === 'landscape'" [class.bg-slate-800]="canvasFormat() !== 'landscape'" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500/80 transition-colors flex items-center gap-1.5">
+          <span>🖥️ 16:9 Landscape</span>
+        </button>
+        <button (click)="canvasFormat.set('portrait'); drawCanvas()" [class.bg-red-600]="canvasFormat() === 'portrait'" [class.bg-slate-800]="canvasFormat() !== 'portrait'" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500/80 transition-colors flex items-center gap-1.5">
+          <span>🖼️ 4:5 Portrait</span>
+        </button>
+      </div>
+
+      <!-- Theme Presets -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-1">Presets:</span>
+        <button *ngFor="let p of presets" (click)="applyPreset(p)" class="px-2.5 py-1.5 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-700 transition-colors">
+          {{p.name}}
+        </button>
+        <button (click)="saveCustomPreset()" class="px-2.5 py-1.5 bg-green-600/20 text-green-400 hover:bg-green-600/30 rounded-lg text-xs font-medium border border-green-500/30 transition-colors" title="Save current colors to browser">
+          💾 Save
+        </button>
+        <button (click)="loadCustomPreset()" class="px-2.5 py-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 rounded-lg text-xs font-medium border border-blue-500/30 transition-colors" title="Load saved colors">
+          📂 Load
+        </button>
+      </div>
+
+      <!-- Reset / Undo -->
+      <div class="flex items-center gap-2">
+        <button (click)="resetPositions()" class="px-3 py-1.5 bg-slate-800 hover:bg-red-500/20 text-gray-300 hover:text-red-400 rounded-lg text-xs font-medium border border-slate-700 transition-colors flex items-center gap-1">
+          <span>🔄 Reset Positions</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Left Sidebar: Controls -->
+      <div class="w-full lg:w-[400px] flex-shrink-0 flex flex-col gap-6">
+        
+        <div class="bg-[#0a0f18] rounded-xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[800px]">
+          <div class="p-4 border-b border-slate-800 bg-slate-900/50">
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+              Graphic Settings
+            </h2>
+          </div>
+
+          <div class="p-6 overflow-y-auto space-y-8 flex-1 custom-scrollbar">
+            
+            <!-- Background Image -->
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Background Image</label>
+              <div class="relative">
+                <input type="file" accept="image/*" (change)="onImageUpload($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                <div class="border-2 border-dashed border-slate-700 hover:border-red-500/50 rounded-lg p-4 text-center transition-colors">
+                  <p class="text-sm text-gray-300 font-medium">Upload Image</p>
+                </div>
+              </div>
+              
+              <div *ngIf="bgImage()" class="mt-4 space-y-3">
+                <div>
+                  <div class="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Scale</span>
+                    <span>{{bgScale()}}%</span>
+                  </div>
+                  <input type="range" min="10" max="500" [value]="bgScale()" (input)="updateBg('scale', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Horizontal Offset</span>
+                  </div>
+                  <input type="range" min="-1000" max="1000" [value]="bgOffsetX()" (input)="updateBg('x', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Vertical Offset</span>
+                  </div>
+                  <input type="range" min="-1000" max="1000" [value]="bgOffsetY()" (input)="updateBg('y', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero / Car Image Layer -->
+            <div class="pt-4 border-t border-slate-800 space-y-3">
+              <label class="block text-sm font-medium text-gray-300">🏎️ Hero / Car Cutout Layer</label>
+              <div class="relative">
+                <input type="file" accept="image/*" (change)="onHeroImageUpload($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                <div class="border border-dashed border-slate-700 hover:border-red-500/50 rounded-lg p-3 text-center transition-colors bg-slate-900/40">
+                  <p class="text-xs text-gray-300 font-medium">Upload Car / Hero Image (PNG with transparency recommended)</p>
+                </div>
+              </div>
+
+              <div *ngIf="heroImage" class="space-y-3 pt-2">
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Scale</span><span>{{heroScale()}}%</span></div>
+                    <input type="range" min="10" max="300" [value]="heroScale()" (input)="updateHero('scale', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Opacity</span><span>{{heroOpacity()}}%</span></div>
+                    <input type="range" min="0" max="100" [value]="heroOpacity()" (input)="updateHero('opacity', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Horizontal Offset</span></div>
+                    <input type="range" min="-1000" max="1000" [value]="heroOffsetX()" (input)="updateHero('x', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Vertical Offset</span></div>
+                    <input type="range" min="-1000" max="1000" [value]="heroOffsetY()" (input)="updateHero('y', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+
+                <div class="p-2.5 bg-slate-900/80 rounded-lg border border-cyan-500/30 space-y-2 mt-2 shadow-inner">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-cyan-400 flex items-center gap-1">📑 Magazine Layering</span>
+                    <button type="button" (click)="heroLayering.set(heroLayering() === 'above' ? 'below' : 'above'); drawCanvas()" [class]="heroLayering() === 'above' ? 'bg-cyan-600 text-white font-bold' : 'bg-slate-800 text-gray-400'" class="px-2 py-0.5 rounded text-[10px] tracking-wider transition-colors">
+                      {{ heroLayering() === 'above' ? 'ABOVE TEXT (MAGAZINE)' : 'BELOW TEXT (STANDARD)' }}
+                    </button>
+                  </div>
+                  <div class="flex items-center justify-between pt-1 border-t border-slate-800/80">
+                    <span class="text-xs font-semibold text-cyan-300 flex items-center gap-1">✨ Silhouette Neon Glow</span>
+                    <div class="flex items-center gap-2">
+                      <input *ngIf="heroSilhouetteGlow()" type="color" [value]="heroSilhouetteColor()" (input)="heroSilhouetteColor.set($any($event.target).value); drawCanvas()" class="w-5 h-5 rounded cursor-pointer p-0 border-0 bg-transparent">
+                      <button type="button" (click)="heroSilhouetteGlow.set(!heroSilhouetteGlow()); drawCanvas()" [class]="heroSilhouetteGlow() ? 'bg-cyan-600 text-white font-bold' : 'bg-slate-800 text-gray-400'" class="px-2 py-0.5 rounded text-[10px] tracking-wider transition-colors">
+                        {{ heroSilhouetteGlow() ? 'ON' : 'OFF' }}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-1.5 pt-1 border-t border-slate-800/80">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-semibold text-amber-400 flex items-center gap-1">⚡ Smart Background Remover</span>
+                      <button type="button" (click)="heroRemoveBackground.set(!heroRemoveBackground()); drawCanvas()" [class]="heroRemoveBackground() ? 'bg-amber-500 text-black font-bold' : 'bg-slate-800 text-gray-400'" class="px-2 py-0.5 rounded text-[10px] tracking-wider transition-colors">
+                        {{ heroRemoveBackground() ? 'ACTIVE' : 'OFF' }}
+                      </button>
+                    </div>
+                    <div *ngIf="heroRemoveBackground()" class="flex items-center justify-between gap-2 pl-2">
+                      <span class="text-[10px] text-gray-400">Tolerance: {{heroChromaTolerance()}}%</span>
+                      <input type="range" min="5" max="85" [value]="heroChromaTolerance()" (input)="heroChromaTolerance.set($any($event.target).value); drawCanvas()" class="w-28 accent-amber-500 h-1 bg-slate-700 rounded cursor-pointer">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Logo Controls -->
+            <div class="pt-4 border-t border-slate-800 space-y-3">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Logo Position & Size</label>
+              <div>
+                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Scale</span>
+                  <span>{{logoScale()}}%</span>
+                </div>
+                <input type="range" min="10" max="500" [value]="logoScale()" (input)="updateLogo('scale', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Horizontal Offset</span>
+                </div>
+                <input type="range" min="-1000" max="1000" [value]="logoOffsetX()" (input)="updateLogo('x', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Vertical Offset</span>
+                </div>
+                <input type="range" min="-1000" max="1000" [value]="logoOffsetY()" (input)="updateLogo('y', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+            </div>
+
+            <!-- Sponsors Banner Settings -->
+            <div class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-gray-300">Sponsors Banner</label>
+              
+              <div>
+                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Banner Size</span>
+                  <input type="number" [value]="bannerScale()" (input)="updateBanner('scale', $event)" class="w-16 bg-slate-800 text-white rounded px-1 text-right border border-slate-700 h-5">
+                </div>
+                <input type="range" min="10" max="200" [value]="bannerScale()" (input)="updateBanner('scale', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+
+              <div>
+                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                  <span>Logos Vertical Position</span>
+                  <input type="number" [value]="bannerOffsetY()" (input)="updateBanner('y', $event)" class="w-16 bg-slate-800 text-white rounded px-1 text-right border border-slate-700 h-5">
+                </div>
+                <input type="range" min="-500" max="500" [value]="bannerOffsetY()" (input)="updateBanner('y', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+
+              <div class="mt-2">
+                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                  <span>Title Vertical Position</span>
+                </div>
+                <input type="range" min="-1000" max="1000" [value]="titleOffsetY()" (input)="updateBanner('titleY', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              </div>
+
+              <!-- Toggle Sponsor Background & Title -->
+              <div class="flex items-center gap-3 mt-2">
+                <input 
+                  type="checkbox" 
+                  id="showSponsorBg"
+                  [checked]="showSponsorBackground()" 
+                  (change)="showSponsorBackground.set($any($event.target).checked); drawCanvas()"
+                  class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-red-500 focus:ring-red-500 focus:ring-offset-slate-900"
+                >
+                <label for="showSponsorBg" class="text-xs text-gray-300 select-none cursor-pointer">
+                  Show "Official Partners" Title & Background
+                </label>
+              </div>
+
+              <!-- Toggle Top Title Sponsor Badge -->
+              <div class="p-2.5 bg-slate-900 rounded border border-slate-700/60 mt-2 space-y-2">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="showTopSponsor" [checked]="showTopSponsor()" (change)="showTopSponsor.set($any($event.target).checked); drawCanvas()" class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-red-500 focus:ring-0 cursor-pointer">
+                  <label for="showTopSponsor" class="text-xs font-bold text-amber-400 select-none cursor-pointer">👑 Top Title Sponsor Badge (Top-Right)</label>
+                </div>
+                <div *ngIf="showTopSponsor()" class="flex gap-2">
+                  <input type="text" [value]="topSponsorText()" (input)="topSponsorText.set($any($event.target).value); drawCanvas()" placeholder="e.g. TITLE SPONSOR: SHELL" class="w-full bg-slate-800 border border-slate-700 text-white font-bold rounded px-2.5 py-1 text-xs focus:outline-none focus:border-red-500">
+                </div>
+              </div>
+
+              <!-- Add Custom Sponsor Button -->
+              <div class="relative mt-2">
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  (change)="addCustomSponsor($event)"
+                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                >
+                <div class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-lg px-3 py-2 text-sm transition-colors border border-slate-700 hover:border-slate-600">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Add Custom Sponsor</span>
+                </div>
+              </div>
+
+              <!-- Sponsors List -->
+              <div *ngIf="sponsors().length > 0" class="mt-4 border border-slate-700 rounded-lg overflow-hidden">
+                <div class="bg-slate-800 p-2 text-xs font-semibold text-gray-400 uppercase tracking-wider flex justify-between items-center">
+                  <span>Sponsors ({{sponsors().length}})</span>
+                  <span *ngIf="loadingSponsors()" class="animate-pulse text-red-400">Loading...</span>
+                </div>
+                
+                <div class="max-h-[300px] overflow-y-auto custom-scrollbar bg-slate-900/50">
+                  <div *ngFor="let s of sponsors()" class="border-t border-slate-800/50 p-2">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <img *ngIf="s.logoImage" [src]="images.resolve(s.logoImage)" class="h-6 w-6 object-contain bg-white rounded p-0.5">
+                        <span class="text-sm text-gray-300 truncate max-w-[120px]">{{s.name}}</span>
+                      </div>
+                      
+                      <div class="flex items-center gap-1">
+                        <button 
+                          (click)="expandedSponsorSettingsId.set(expandedSponsorSettingsId() === s.id ? null : s.id)"
+                          class="p-1.5 rounded text-gray-400 hover:bg-slate-800 hover:text-white transition-colors"
+                          [class.bg-slate-800]="expandedSponsorSettingsId() === s.id">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                          </svg>
+                        </button>
+
+                        <button 
+                          (click)="toggleSponsor(s.id)"
+                          class="p-1.5 rounded transition-colors"
+                          [class.text-red-500]="hiddenSponsorIds().includes(s.id)"
+                          [class.text-green-500]="!hiddenSponsorIds().includes(s.id)"
+                          [class.hover:bg-red-500/10]="hiddenSponsorIds().includes(s.id)"
+                          [class.hover:bg-green-500/10]="!hiddenSponsorIds().includes(s.id)"
+                        >
+                          <svg *ngIf="!hiddenSponsorIds().includes(s.id)" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          <svg *ngIf="hiddenSponsorIds().includes(s.id)" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        </button>
+                        
+                        <button 
+                          (click)="removeSponsor(s.id)"
+                          class="p-1.5 rounded transition-colors text-gray-400 hover:text-red-500 hover:bg-red-500/10"
+                        >
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Individual Sponsor Controls -->
+                    <div *ngIf="expandedSponsorSettingsId() === s.id" class="mt-3 p-3 bg-slate-900 rounded border border-slate-700/50 space-y-3">
+                      <div>
+                        <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                          <span>Scale</span>
+                          <span>{{sponsorCustomizations()[s.id]?.scale || 100}}%</span>
+                        </div>
+                        <input type="range" min="10" max="300" [value]="sponsorCustomizations()[s.id]?.scale || 100" (input)="updateSponsorCustomization(s.id, 'scale', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div class="flex gap-2">
+                        <div class="flex-1">
+                          <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                            <span>X Offset</span>
+                            <input type="number" [value]="sponsorCustomizations()[s.id]?.offsetX || 0" (input)="updateSponsorCustomization(s.id, 'x', $event)" class="w-12 bg-slate-800 text-white rounded px-1 text-right border border-slate-700 h-4">
+                          </div>
+                          <input type="range" min="-500" max="500" [value]="sponsorCustomizations()[s.id]?.offsetX || 0" (input)="updateSponsorCustomization(s.id, 'x', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                            <span>Y Offset</span>
+                            <input type="number" [value]="sponsorCustomizations()[s.id]?.offsetY || 0" (input)="updateSponsorCustomization(s.id, 'y', $event)" class="w-12 bg-slate-800 text-white rounded px-1 text-right border border-slate-700 h-4">
+                          </div>
+                          <input type="range" min="-500" max="500" [value]="sponsorCustomizations()[s.id]?.offsetY || 0" (input)="updateSponsorCustomization(s.id, 'y', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Effects & Overlays -->
+            <div class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-semibold text-cyan-400 flex items-center gap-1.5">
+                <span>✨</span> Visual Effects & Overlays
+              </label>
+              
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" 
+                  (click)="showCarbonFiber.set(!showCarbonFiber()); drawCanvas()"
+                  [class]="showCarbonFiber() ? 'bg-red-600/20 border-red-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>🏁</span> Carbon Fiber
+                </button>
+
+                <button type="button" 
+                  (click)="showSpeedLines.set(!showSpeedLines()); drawCanvas()"
+                  [class]="showSpeedLines() ? 'bg-red-600/20 border-red-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>⚡</span> Speed Lines
+                </button>
+
+                <button type="button" 
+                  (click)="showSparks.set(!showSparks()); drawCanvas()"
+                  [class]="showSparks() ? 'bg-red-600/20 border-red-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>✨</span> Victory Sparks
+                </button>
+
+                <button type="button" 
+                  (click)="showHudBrackets.set(!showHudBrackets()); drawCanvas()"
+                  [class]="showHudBrackets() ? 'bg-red-600/20 border-red-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>🎯</span> Tech HUD
+                </button>
+
+                <button type="button" 
+                  (click)="showHexMesh.set(!showHexMesh()); drawCanvas()"
+                  [class]="showHexMesh() ? 'bg-cyan-600/20 border-cyan-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>🛑</span> Hex Mesh
+                </button>
+
+                <button type="button" 
+                  (click)="showStadiumBokeh.set(!showStadiumBokeh()); drawCanvas()"
+                  [class]="showStadiumBokeh() ? 'bg-cyan-600/20 border-cyan-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>🎆</span> Stadium Bokeh
+                </button>
+
+                <button type="button" 
+                  (click)="showFilmGrain.set(!showFilmGrain()); drawCanvas()"
+                  [class]="showFilmGrain() ? 'bg-cyan-600/20 border-cyan-500 text-white' : 'bg-slate-900/80 border-slate-700/60 text-gray-400 hover:border-slate-600'"
+                  class="flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all">
+                  <span>🎞️</span> Film Grain
+                </button>
+              </div>
+
+              <!-- Motorsport Typography & Graphic Vibe Presets -->
+              <div class="p-3 bg-gradient-to-br from-slate-900 to-slate-950 rounded-xl border border-red-600/30 space-y-3 shadow-inner">
+                <label class="block text-xs font-bold text-red-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>🎨</span> Graphic Design & Vibe Supercharge
+                </label>
+                
+                <div class="space-y-1.5">
+                  <span class="text-[11px] font-semibold text-gray-400">Typography Style</span>
+                  <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" (click)="fontPreset.set('racing'); drawCanvas()" [class]="fontPreset() === 'racing' ? 'bg-red-600 text-white font-bold border-red-400 shadow-md shadow-red-600/30' : 'bg-slate-800 text-gray-400 hover:text-white border-slate-700'" class="py-1.5 px-2 rounded-lg border text-[11px] transition-all flex items-center justify-center gap-1">🏎️ Racing Sans</button>
+                    <button type="button" (click)="fontPreset.set('cyber'); drawCanvas()" [class]="fontPreset() === 'cyber' ? 'bg-cyan-600 text-white font-bold border-cyan-400 shadow-md shadow-cyan-600/30' : 'bg-slate-800 text-gray-400 hover:text-white border-slate-700'" class="py-1.5 px-2 rounded-lg border text-[11px] transition-all flex items-center justify-center gap-1">⚡ Sci-Fi Cyber</button>
+                    <button type="button" (click)="fontPreset.set('industrial'); drawCanvas()" [class]="fontPreset() === 'industrial' ? 'bg-amber-600 text-white font-bold border-amber-400 shadow-md shadow-amber-600/30' : 'bg-slate-800 text-gray-400 hover:text-white border-slate-700'" class="py-1.5 px-2 rounded-lg border text-[11px] transition-all flex items-center justify-center gap-1">🏗️ Industrial</button>
+                    <button type="button" (click)="fontPreset.set('minimal'); drawCanvas()" [class]="fontPreset() === 'minimal' ? 'bg-slate-700 text-white font-bold border-slate-500 shadow-md' : 'bg-slate-800 text-gray-400 hover:text-white border-slate-700'" class="py-1.5 px-2 rounded-lg border text-[11px] transition-all flex items-center justify-center gap-1">🏁 Clean Inter</button>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                  <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5"><span>💡</span> Spotlight Glow</span>
+                  <div class="flex items-center gap-2">
+                    <input *ngIf="showSpotlightGlow()" type="color" [value]="spotlightGlowColor()" (input)="spotlightGlowColor.set($any($event.target).value); drawCanvas()" class="w-5 h-5 rounded cursor-pointer p-0 border-0 bg-transparent">
+                    <button type="button" (click)="showSpotlightGlow.set(!showSpotlightGlow()); drawCanvas()" [class]="showSpotlightGlow() ? 'bg-red-600 text-white' : 'bg-slate-800 text-gray-400'" class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider transition-colors">{{ showSpotlightGlow() ? 'ON' : 'OFF' }}</button>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5"><span>🔻</span> Sci-Fi Corner Brackets</span>
+                  <button type="button" (click)="showSciFiBorders.set(!showSciFiBorders()); drawCanvas()" [class]="showSciFiBorders() ? 'bg-red-600 text-white' : 'bg-slate-800 text-gray-400'" class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider transition-colors">{{ showSciFiBorders() ? 'ON' : 'OFF' }}</button>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5"><span>📢</span> Official Footer Bar</span>
+                  <button type="button" (click)="showFooterBar.set(!showFooterBar()); drawCanvas()" [class]="showFooterBar() ? 'bg-red-600 text-white' : 'bg-slate-800 text-gray-400'" class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider transition-colors">{{ showFooterBar() ? 'ON' : 'OFF' }}</button>
+                </div>
+                <input *ngIf="showFooterBar()" type="text" [value]="footerText()" (input)="footerText.set($any($event.target).value); drawCanvas()" placeholder="WWW.TRACERSMEC.COM // FSAE 2026" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-[11px] focus:outline-none focus:border-red-500 font-mono">
+              </div>
+
+              <div class="p-3 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5"><span>🔤</span> Watermark Text</span>
+                  <button type="button" 
+                    (click)="showWatermark.set(!showWatermark()); drawCanvas()"
+                    [class]="showWatermark() ? 'bg-red-600 text-white' : 'bg-slate-800 text-gray-400'"
+                    class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider transition-colors">
+                    {{ showWatermark() ? 'ON' : 'OFF' }}
+                  </button>
+                </div>
+                <input *ngIf="showWatermark()" type="text" [value]="watermarkText()" 
+                  (input)="watermarkText.set($any($event.target).value); drawCanvas()" 
+                  placeholder="T-RACERS FSAE"
+                  class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1 text-xs focus:outline-none focus:border-red-500 font-mono tracking-widest">
+              </div>
+
+              <!-- Phase 6: Team Template Library & Presets -->
+              <div class="p-3 bg-gradient-to-br from-slate-900 to-indigo-950/40 rounded-xl border border-indigo-500/30 space-y-3 shadow-inner">
+                <label class="block text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                  <span class="flex items-center gap-1.5"><span>💾</span> Team Template Library</span>
+                  <span class="text-[10px] text-indigo-300 font-normal">{{ savedTemplateLibrary().length }} Saved</span>
+                </label>
+
+                <div class="flex gap-2">
+                  <input type="text" [value]="newTemplateName()" (input)="newTemplateName.set($any($event.target).value)" placeholder="Template Name (e.g. Livery Reveal 2026)" class="flex-1 bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+                  <button type="button" (click)="saveToTemplateLibrary()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3 py-1.5 rounded text-xs transition-colors shadow-md flex items-center gap-1">
+                    <span>➕ Save</span>
+                  </button>
+                </div>
+
+                <div *ngIf="savedTemplateLibrary().length > 0" class="max-h-36 overflow-y-auto custom-scrollbar space-y-1.5 pt-1">
+                  <div *ngFor="let tmpl of savedTemplateLibrary()" class="flex items-center justify-between p-2 bg-slate-800/80 hover:bg-slate-800 rounded border border-slate-700/60 transition-colors">
+                    <div class="flex flex-col truncate pr-2">
+                      <span class="text-xs font-bold text-white truncate">{{ tmpl.name }}</span>
+                      <span class="text-[10px] text-gray-400 uppercase">{{ tmpl.mode }} // {{ tmpl.format }} // {{ tmpl.date }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                      <button type="button" (click)="loadFromTemplateLibrary(tmpl)" class="bg-indigo-500 hover:bg-indigo-400 text-white px-2 py-1 rounded text-[10px] font-semibold transition-colors">Load</button>
+                      <button type="button" (click)="deleteFromTemplateLibrary(tmpl.id)" class="bg-red-900/50 hover:bg-red-700 text-red-300 px-1.5 py-1 rounded text-[10px] transition-colors">🗑️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Phase 6: Batch Carousel Generator -->
+              <div class="p-3 bg-gradient-to-br from-slate-900 to-amber-950/40 rounded-xl border border-amber-500/30 space-y-2 shadow-inner">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎠</span> Batch Carousel Generator (4 Slides)
+                  </span>
+                  <button type="button" 
+                    (click)="runBatchCarousel()"
+                    [disabled]="isGeneratingCarousel() || !previewUrl()"
+                    class="bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-bold px-3 py-1.5 rounded text-xs transition-all shadow-md flex items-center gap-1">
+                    <span>{{ isGeneratingCarousel() ? '⏳ Slide ' + carouselProgress() + '/4...' : '⚡ Generate ZIP / Slides' }}</span>
+                  </button>
+                </div>
+                <p class="text-[11px] text-gray-400 leading-relaxed">
+                  Automatically generates and downloads a 4-slide sequence (Livery Launch, 400V Powertrain, Carbon Aero Package, Tubular Chassis) with matching typography & branding.
+                </p>
+              </div>
+            </div>
+
+            <!-- 🌟 MASTER UNIVERSAL CONTROLLER (ALWAYS ACTIVE IN ALL MODES) -->
+            <div class="pt-6 border-t-2 border-red-500/50">
+              <div class="p-4 bg-gradient-to-br from-slate-900 via-red-950/20 to-slate-900 rounded-xl border border-red-500/40 shadow-xl space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base font-extrabold text-white tracking-wide flex items-center gap-2">
+                      <span>🎛️</span> UNIVERSAL MASTER CONTROLLER
+                    </span>
+                    <span class="px-2 py-0.5 bg-red-600/30 text-red-400 border border-red-500/40 text-[10px] font-bold rounded-full uppercase tracking-wider">Works in All Modes</span>
+                  </div>
+                  <button type="button" (click)="resetUniversalControls()" class="text-[11px] text-gray-400 hover:text-white underline font-medium">Reset All</button>
+                </div>
+
+                <!-- 🎨 1. UNIVERSAL COLOR PALETTE OVERRIDES -->
+                <div class="space-y-3">
+                  <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎨</span> 1. Global Color Master (Control Every Element in ANY Post)
+                  </label>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <!-- Title -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Title / Header</div>
+                        <div class="text-[9px] text-gray-400 truncate">Main headings</div>
+                      </div>
+                      <input type="color" [value]="universalTitleColor()" (input)="universalTitleColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Subtitle -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Subtitle / Tag</div>
+                        <div class="text-[9px] text-gray-400 truncate">Secondary text</div>
+                      </div>
+                      <input type="color" [value]="universalSubColor()" (input)="universalSubColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Body Text -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Body Text</div>
+                        <div class="text-[9px] text-gray-400 truncate">Bullets & specs</div>
+                      </div>
+                      <input type="color" [value]="universalBodyColor()" (input)="universalBodyColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Accent / Glow -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Accent / Glow</div>
+                        <div class="text-[9px] text-gray-400 truncate">Highlights & neon</div>
+                      </div>
+                      <input type="color" [value]="universalAccentColor()" (input)="universalAccentColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Border / Lines -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Border / Grid</div>
+                        <div class="text-[9px] text-gray-400 truncate">Card lines & mesh</div>
+                      </div>
+                      <input type="color" [value]="universalBorderColor()" (input)="universalBorderColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Box / Card Bg -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Card / Box Bg</div>
+                        <div class="text-[9px] text-gray-400 truncate">Inner container fill</div>
+                      </div>
+                      <input type="color" [value]="universalBoxBgColor()" (input)="universalBoxBgColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Canvas Bg -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Canvas Bg</div>
+                        <div class="text-[9px] text-gray-400 truncate">Main background</div>
+                      </div>
+                      <input type="color" [value]="universalBgColor()" (input)="universalBgColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                    <!-- Badges / Buttons -->
+                    <div class="p-2 bg-slate-950/80 rounded border border-slate-800 flex items-center justify-between">
+                      <div class="truncate mr-1">
+                        <div class="text-[11px] font-bold text-white truncate">Badges / CTA</div>
+                        <div class="text-[9px] text-gray-400 truncate">Pills & buttons</div>
+                      </div>
+                      <input type="color" [value]="universalBadgeBgColor()" (input)="universalBadgeBgColor.set($any($event.target).value); drawCanvas()" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent shrink-0">
+                    </div>
+                  </div>
+                  <!-- Quick Palette Presets -->
+                  <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span class="text-[10px] font-semibold text-gray-400 uppercase mr-1">Quick Themes:</span>
+                    <button type="button" (click)="applyQuickColorPalette('#ffffff', '#cbd5e1', '#f8fafc', '#ffffff', '#94a3b8', '#0f172a', '#050b14', '#334155')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] border border-slate-700">⚪ Pure White</button>
+                    <button type="button" (click)="applyQuickColorPalette('#f59e0b', '#fde68a', '#fffbeb', '#f59e0b', '#d97706', '#1e1b18', '#0f0b07', '#d97706')" class="px-2 py-1 bg-amber-950/50 hover:bg-amber-900/50 text-amber-300 rounded text-[10px] border border-amber-500/30">🏆 Gold Glory</button>
+                    <button type="button" (click)="applyQuickColorPalette('#00f0ff', '#e0f8ff', '#f0fdf4', '#00f0ff', '#06b6d4', '#081e26', '#030d12', '#0891b2')" class="px-2 py-1 bg-cyan-950/50 hover:bg-cyan-900/50 text-cyan-300 rounded text-[10px] border border-cyan-500/30">⚡ Cyber Neon</button>
+                    <button type="button" (click)="applyQuickColorPalette('#ffffff', '#fca5a5', '#fee2e2', '#dc2626', '#ef4444', '#1f1010', '#0a0505', '#dc2626')" class="px-2 py-1 bg-red-950/50 hover:bg-red-900/50 text-red-300 rounded text-[10px] border border-red-500/30">🔥 Racing Red</button>
+                    <button type="button" (click)="applyQuickColorPalette('#a855f7', '#e9d5ff', '#faf5ff', '#c084fc', '#9333ea', '#191024', '#0b0612', '#7e22ce')" class="px-2 py-1 bg-purple-950/50 hover:bg-purple-900/50 text-purple-300 rounded text-[10px] border border-purple-500/30">🌌 Midnight Purple</button>
+                    <button type="button" (click)="applyQuickColorPalette('#10b981', '#a7f3d0', '#ecfdf5', '#10b981', '#059669', '#061c14', '#020b08', '#059669')" class="px-2 py-1 bg-emerald-950/50 hover:bg-emerald-900/50 text-emerald-300 rounded text-[10px] border border-emerald-500/30">🟢 Emerald Racing</button>
+                  </div>
+                </div>
+
+                <!-- 📐 2. UNIVERSAL POSITION & SIZE SLIDERS -->
+                <div class="space-y-3 pt-2 border-t border-slate-800/80">
+                  <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>📐</span> 2. Global Position & Size Adjusters (Any Post)
+                  </label>
+                  
+                  <!-- Title Controls -->
+                  <div class="p-2.5 bg-slate-950/60 rounded-lg border border-slate-800/80 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-amber-400">
+                      <span>👑 Main Title / Header</span>
+                      <span class="text-[11px] font-mono text-gray-400">Scale: {{universalTitleScale()}}% | X: {{universalTitleOffsetX()}}px | Y: {{universalTitleOffsetY()}}px</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">Scale (%)</div>
+                        <input type="range" min="50" max="250" [value]="universalTitleScale()" (input)="universalTitleScale.set($any($event.target).value); drawCanvas()" class="w-full accent-amber-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">X Position</div>
+                        <input type="range" min="-400" max="400" [value]="universalTitleOffsetX()" (input)="universalTitleOffsetX.set($any($event.target).value); drawCanvas()" class="w-full accent-amber-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">Y Position</div>
+                        <input type="range" min="-400" max="400" [value]="universalTitleOffsetY()" (input)="universalTitleOffsetY.set($any($event.target).value); drawCanvas()" class="w-full accent-amber-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Subtitle Controls -->
+                  <div class="p-2.5 bg-slate-950/60 rounded-lg border border-slate-800/80 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-cyan-400">
+                      <span>📝 Subtitle / Secondary Text</span>
+                      <span class="text-[11px] font-mono text-gray-400">Scale: {{universalSubScale()}}% | X: {{universalSubOffsetX()}}px | Y: {{universalSubOffsetY()}}px</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">Scale (%)</div>
+                        <input type="range" min="50" max="250" [value]="universalSubScale()" (input)="universalSubScale.set($any($event.target).value); drawCanvas()" class="w-full accent-cyan-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">X Position</div>
+                        <input type="range" min="-400" max="400" [value]="universalSubOffsetX()" (input)="universalSubOffsetX.set($any($event.target).value); drawCanvas()" class="w-full accent-cyan-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">Y Position</div>
+                        <input type="range" min="-400" max="400" [value]="universalSubOffsetY()" (input)="universalSubOffsetY.set($any($event.target).value); drawCanvas()" class="w-full accent-cyan-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Main Content / Card Box Controls -->
+                  <div class="p-2.5 bg-slate-950/60 rounded-lg border border-slate-800/80 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-red-400">
+                      <span>📦 Main Content Box / Cards</span>
+                      <span class="text-[11px] font-mono text-gray-400">Scale: {{universalContentScale()}}% | X: {{universalContentOffsetX()}}px | Y: {{universalContentOffsetY()}}px</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">Scale (%)</div>
+                        <input type="range" min="50" max="200" [value]="universalContentScale()" (input)="universalContentScale.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">X Position</div>
+                        <input type="range" min="-400" max="400" [value]="universalContentOffsetX()" (input)="universalContentOffsetX.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div>
+                        <div class="text-[10px] text-gray-400 mb-0.5">Y Position</div>
+                        <input type="range" min="-400" max="400" [value]="universalContentOffsetY()" (input)="universalContentOffsetY.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ➕ 3. CANVA-STYLE FREE-FORM FLOATING TEXT LAYERS -->
+                <div class="space-y-3 pt-2 border-t border-slate-800/80">
+                  <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <span>➕</span> 3. Free-Form Text & Badges Layer
+                    </label>
+                    <span class="text-[10px] text-gray-400">Drag directly on canvas</span>
+                  </div>
+                  
+                  <div class="flex gap-2">
+                    <input #newTextEl type="text" placeholder="e.g. ROUND 1 - MONZA or APPROVED or VIP" (keyup.enter)="addCustomText(newTextEl)" class="flex-1 bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                    <button type="button" (click)="addCustomText(newTextEl)" class="bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shadow-md">
+                      <span>+ Add</span>
+                    </button>
+                  </div>
+
+                  <div *ngIf="customTexts().length > 0" class="space-y-2 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
+                    <div *ngFor="let ct of customTexts()" class="p-2 bg-slate-950/80 rounded-lg border border-slate-800 flex items-center gap-2">
+                      <input type="text" [value]="ct.text" (input)="updateCustomTextControl(ct.id, 'text', $event)" class="w-28 bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs font-bold">
+                      <div class="flex-1 flex items-center gap-1.5">
+                        <span class="text-[10px] text-gray-400">Size:</span>
+                        <input type="range" min="20" max="200" [value]="ct.scale" (input)="updateCustomTextControl(ct.id, 'scale', $event)" class="w-16 accent-red-500 h-1 bg-slate-800 rounded cursor-pointer">
+                      </div>
+                      <input type="color" [value]="ct.color" (input)="updateCustomTextControl(ct.id, 'color', $event)" class="w-6 h-6 rounded cursor-pointer p-0 border-0 bg-transparent">
+                      <button type="button" (click)="removeCustomText(ct.id)" class="text-gray-400 hover:text-red-400 p-1 text-xs">🗑️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Achievements Mode Controls -->
+            <div *ngIf="studioMode() === 'achievements'" class="space-y-6">
+              <!-- Layout Style -->
+              <div class="pt-4 border-t border-slate-800 space-y-2">
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">📐 Layout Style</label>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button type="button" (click)="achievementsLayout.set('classic'); drawCanvas()" [class]="achievementsLayout() === 'classic' ? 'bg-red-600 text-white font-bold shadow-md shadow-red-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">Classic Grid</button>
+                  <button type="button" (click)="achievementsLayout.set('podium'); drawCanvas()" [class]="achievementsLayout() === 'podium' ? 'bg-red-600 text-white font-bold shadow-md shadow-red-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">🏆 Podium</button>
+                  <button type="button" (click)="achievementsLayout.set('minimal'); drawCanvas()" [class]="achievementsLayout() === 'minimal' ? 'bg-red-600 text-white font-bold shadow-md shadow-red-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">⚡ Minimal</button>
+                </div>
+              </div>
+
+              <!-- Typography -->
+              <div class="pt-4 border-t border-slate-800 space-y-4">
+                <label class="block text-sm font-medium text-gray-300">Typography</label>
+              
+              <!-- Event Name -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-700/50">
+                <label class="block text-xs font-semibold text-gray-400">Event Name</label>
+                <input type="text" [value]="eventName()" (input)="eventName.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Size</span><span>{{eventNameSize()}}px</span></div>
+                    <input type="range" min="10" max="100" [value]="eventNameSize()" (input)="eventNameSize.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>X Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="eventNameXOffset()" (input)="eventNameXOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Y Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="eventNameYOffset()" (input)="eventNameYOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="w-8">
+                    <div class="text-[10px] text-gray-400 mb-1">Color</div>
+                    <input type="color" [value]="eventNameColor()" (input)="eventNameColor.set($any($event.target).value); drawCanvas()" class="w-full h-4 rounded cursor-pointer p-0 border-0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Title -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-700/50">
+                <label class="block text-xs font-semibold text-gray-400">Main Title</label>
+                <input type="text" [value]="mainTitle()" (input)="mainTitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Size</span><span>{{mainTitleSize()}}px</span></div>
+                    <input type="range" min="20" max="200" [value]="mainTitleSize()" (input)="mainTitleSize.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>X Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="mainTitleXOffset()" (input)="mainTitleXOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Y Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="mainTitleYOffset()" (input)="mainTitleYOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="w-8">
+                    <div class="text-[10px] text-gray-400 mb-1">Color</div>
+                    <input type="color" [value]="mainTitleColor()" (input)="mainTitleColor.set($any($event.target).value); drawCanvas()" class="w-full h-4 rounded cursor-pointer p-0 border-0">
+                  </div>
+                </div>
+
+                <div class="pt-1 flex items-center gap-2">
+                  <label class="text-[11px] font-semibold text-amber-400 whitespace-nowrap">✨ Highlight Word:</label>
+                  <input type="text" [value]="mainTitleHighlightWord()" (input)="mainTitleHighlightWord.set($any($event.target).value); drawCanvas()" placeholder="e.g. RACING" class="flex-1 bg-slate-800 border border-amber-500/50 text-amber-400 font-bold rounded px-2 py-1 text-xs focus:outline-none focus:border-amber-400">
+                </div>
+              </div>
+
+              <!-- Subtitle -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-700/50">
+                <label class="block text-xs font-semibold text-gray-400">Subtitle</label>
+                <textarea rows="2" [value]="subtitle()" (input)="subtitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-red-500"></textarea>
+                
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Size</span><span>{{subtitleSize()}}px</span></div>
+                    <input type="range" min="10" max="100" [value]="subtitleSize()" (input)="subtitleSize.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>X Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="subtitleXOffset()" (input)="subtitleXOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Y Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="subtitleYOffset()" (input)="subtitleYOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+                <div class="flex gap-2 mt-2">
+                  <div class="flex items-center gap-2">
+                    <div class="text-[10px] text-gray-400">Color</div>
+                    <input type="color" [value]="subtitleColor()" (input)="subtitleColor.set($any($event.target).value); drawCanvas()" class="w-8 h-4 rounded cursor-pointer p-0 border-0">
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div class="text-[10px] text-gray-400">Highlight</div>
+                    <input type="color" [value]="subtitleHighlightColor()" (input)="subtitleHighlightColor.set($any($event.target).value); drawCanvas()" class="w-8 h-4 rounded cursor-pointer p-0 border-0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="pt-4 border-t border-slate-800">
+              <div class="flex items-center justify-between mb-4">
+                <label class="block text-sm font-medium text-gray-300">Achievement Cards</label>
+                <button (click)="addCard()" class="text-xs text-red-500 hover:text-red-400 font-medium">+ Add Card</button>
+              </div>
+
+              <!-- Global Card Settings -->
+              <div class="mb-4 p-3 bg-slate-900 rounded border border-slate-700/50 space-y-3">
+                <div class="text-xs font-semibold text-gray-400 mb-2">Global Settings</div>
+                
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Y Offset</span></div>
+                    <input type="range" min="-300" max="300" [value]="cardsGlobalYOffset()" (input)="cardsGlobalYOffset.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Spacing</span></div>
+                    <input type="range" min="0" max="100" [value]="cardsGlobalSpacing()" (input)="cardsGlobalSpacing.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Height</span></div>
+                    <input type="range" min="50" max="400" [value]="cardsGlobalHeight()" (input)="cardsGlobalHeight.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Corner Radius</span></div>
+                    <input type="range" min="0" max="50" [value]="cardsGlobalRadius()" (input)="cardsGlobalRadius.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <div *ngFor="let card of cards()" class="p-3 bg-slate-900 rounded-lg border border-slate-700">
+                  <div class="flex gap-2 mb-2">
+                    <input type="text" [value]="card.rank" (input)="updateCard(card.id, 'rank', $any($event.target).value)" placeholder="Rank (e.g. 1ST)" class="w-16 bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:border-red-500">
+                    <input type="text" [value]="card.title" (input)="updateCard(card.id, 'title', $any($event.target).value)" placeholder="Title" class="flex-1 bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:border-red-500">
+                  </div>
+                  
+                  <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-800">
+                    <button 
+                      (click)="expandedCardSettingsId.set(expandedCardSettingsId() === card.id ? null : card.id)"
+                      class="flex items-center gap-1 text-[10px] text-gray-400 hover:text-white transition-colors"
+                    >
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {{expandedCardSettingsId() === card.id ? 'Hide Settings' : 'Advanced Settings'}}
+                    </button>
+                    <button (click)="removeCard(card.id)" class="text-[10px] text-gray-500 hover:text-red-500 transition-colors">Remove</button>
+                  </div>
+
+                  <!-- Advanced Card Settings -->
+                  <div *ngIf="expandedCardSettingsId() === card.id" class="mt-3 pt-3 border-t border-slate-700/50 space-y-3">
+                    <!-- Colors -->
+                    <div class="flex gap-2">
+                      <div class="flex-1">
+                        <div class="text-[10px] text-gray-400 mb-1">Border Color</div>
+                        <input type="color" [value]="card.theme || '#ffffff'" (input)="updateCard(card.id, 'theme', $any($event.target).value)" class="w-full h-6 rounded cursor-pointer p-0 border-0">
+                      </div>
+                      <div class="flex-1">
+                        <div class="text-[10px] text-gray-400 mb-1">Rank Color</div>
+                        <input type="color" [value]="card.rankColor || card.theme || '#ffffff'" (input)="updateCard(card.id, 'rankColor', $any($event.target).value)" class="w-full h-6 rounded cursor-pointer p-0 border-0">
+                      </div>
+                      <div class="flex-1">
+                        <div class="text-[10px] text-gray-400 mb-1">Title Color</div>
+                        <input type="color" [value]="card.titleColor || '#ffffff'" (input)="updateCard(card.id, 'titleColor', $any($event.target).value)" class="w-full h-6 rounded cursor-pointer p-0 border-0">
+                      </div>
+                    </div>
+
+                    <!-- Size -->
+                    <div class="flex gap-2">
+                      <div class="flex-1">
+                        <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Width</span></div>
+                        <input type="range" min="50" max="400" [value]="card.width || 0" (input)="updateCardCustomization(card.id, 'width', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Height</span></div>
+                        <input type="range" min="50" max="400" [value]="card.height || cardsGlobalHeight()" (input)="updateCardCustomization(card.id, 'height', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                    </div>
+
+                    <!-- Offsets & Radius -->
+                    <div class="flex gap-2">
+                      <div class="flex-1">
+                        <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>X Offset</span></div>
+                        <input type="range" min="-200" max="200" [value]="card.offsetX || 0" (input)="updateCardCustomization(card.id, 'x', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Y Offset</span></div>
+                        <input type="range" min="-200" max="200" [value]="card.offsetY || 0" (input)="updateCardCustomization(card.id, 'y', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Radius</span></div>
+                        <input type="range" min="0" max="50" [value]="card.borderRadius || cardsGlobalRadius()" (input)="updateCardCustomization(card.id, 'radius', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Overall Result -->
+            <div class="pt-4 border-t border-slate-800 space-y-4">
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-gray-300">Overall Result Box</label>
+                <button 
+                  (click)="expandedOverallSettings.set(!expandedOverallSettings())"
+                  class="flex items-center gap-1 text-[10px] text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {{expandedOverallSettings() ? 'Hide Settings' : 'Advanced Settings'}}
+                </button>
+              </div>
+              
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-700/50">
+                <div class="flex gap-2 mb-2">
+                  <input type="text" [value]="overallRank()" (input)="overallRank.set($any($event.target).value); drawCanvas()" placeholder="Rank (e.g. 3RD OVERALL)" class="w-1/2 bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                  <input type="text" [value]="overallSubtitle()" (input)="overallSubtitle.set($any($event.target).value); drawCanvas()" placeholder="Subtitle (e.g. CONCEPT CLASS)" class="w-1/2 bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                </div>
+
+                <div *ngIf="expandedOverallSettings()" class="pt-3 border-t border-slate-700/50 space-y-3">
+                  <!-- Colors -->
+                  <div class="flex gap-2">
+                    <div class="flex-1">
+                      <div class="text-[10px] text-gray-400 mb-1">Border Color</div>
+                      <input type="color" [value]="overallTheme()" (input)="overallTheme.set($any($event.target).value); drawCanvas()" class="w-full h-6 rounded cursor-pointer p-0 border-0">
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-[10px] text-gray-400 mb-1">Rank Color</div>
+                      <input type="color" [value]="overallRankColor() || overallTheme()" (input)="overallRankColor.set($any($event.target).value); drawCanvas()" class="w-full h-6 rounded cursor-pointer p-0 border-0">
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-[10px] text-gray-400 mb-1">Subtitle Color</div>
+                      <input type="color" [value]="overallSubtitleColor()" (input)="overallSubtitleColor.set($any($event.target).value); drawCanvas()" class="w-full h-6 rounded cursor-pointer p-0 border-0">
+                    </div>
+                  </div>
+
+                  <!-- Size -->
+                  <div class="flex gap-2">
+                    <div class="flex-1">
+                      <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Width</span></div>
+                      <input type="range" min="100" max="800" [value]="overallWidth() || 0" (input)="overallWidth.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Height</span></div>
+                      <input type="range" min="50" max="400" [value]="overallHeight()" (input)="overallHeight.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                  </div>
+
+                  <!-- Offsets & Radius -->
+                  <div class="flex gap-2">
+                    <div class="flex-1">
+                      <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>X Offset</span></div>
+                      <input type="range" min="-300" max="300" [value]="overallOffsetX()" (input)="overallOffsetX.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Y Offset</span></div>
+                      <input type="range" min="-300" max="300" [value]="overallOffsetY()" (input)="overallOffsetY.set($any($event.target).value); drawCanvas()" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Radius</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <!-- Hiring Mode Controls -->
+            <div *ngIf="studioMode() === 'hiring'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-cyan-400">📢 Recruitment Settings</label>
+              
+              <!-- Layout Style -->
+              <div class="space-y-1.5">
+                <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider">📐 Layout Style</label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button type="button" (click)="hiringLayout.set('grid'); drawCanvas()" [class]="hiringLayout() === 'grid' ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">📋 Blueprint Grid</button>
+                  <button type="button" (click)="hiringLayout.set('spotlight'); drawCanvas()" [class]="hiringLayout() === 'spotlight' ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">⚡ Spotlight Split</button>
+                </div>
+              </div>
+
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-cyan-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Department / Team Area</label>
+                  <input type="text" [value]="hiringDepartment()" (input)="hiringDepartment.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Season Subtitle</label>
+                  <input type="text" [value]="hiringSubtitle()" (input)="hiringSubtitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Application Deadline</label>
+                  <input type="text" [value]="hiringDeadline()" (input)="hiringDeadline.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-amber-400 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+              </div>
+
+              <!-- Requirements List -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-800">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-semibold text-gray-400">Requirements / Qualifications</label>
+                  <button (click)="addRequirement()" class="text-[10px] bg-cyan-600 hover:bg-cyan-500 text-white px-2 py-1 rounded font-bold transition-colors">+ Add Item</button>
+                </div>
+                <div *ngFor="let req of hiringRequirements(); let idx = index" class="flex gap-2 items-center">
+                  <input type="text" [value]="req" (input)="updateRequirement(idx, $any($event.target).value)" class="flex-1 bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1 text-xs focus:outline-none focus:border-cyan-500">
+                  <button (click)="removeRequirement(idx)" class="text-red-400 hover:text-red-300 p-1">🗑️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sponsor Announcement Controls -->
+            <div *ngIf="studioMode() === 'sponsor'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-amber-400">🤝 Partnership Announcement</label>
+              
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-amber-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Partnership Tier / Type</label>
+                  <input type="text" [value]="sponsorModeTier()" (input)="sponsorModeTier.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-amber-400 font-bold rounded px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Partner Name</label>
+                  <input type="text" [value]="sponsorModeName()" (input)="sponsorModeName.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Tagline / Description</label>
+                  <input type="text" [value]="sponsorModeTagline()" (input)="sponsorModeTagline.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex items-center justify-between pt-1">
+                  <span class="text-xs text-gray-400">Spotlight Glow Color</span>
+                  <input type="color" [value]="sponsorGlowColor()" (input)="sponsorGlowColor.set($any($event.target).value); drawCanvas()" class="w-8 h-6 rounded cursor-pointer p-0 border-0">
+                </div>
+              </div>
+
+              <!-- Sponsor Big Logo Upload -->
+              <div class="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
+                <label class="block text-xs font-semibold text-gray-300">Sponsor Spotlight Logo</label>
+                <div class="relative">
+                  <input type="file" accept="image/*" (change)="onSponsorLogoUpload($event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                  <div class="border-2 border-dashed border-slate-700 hover:border-amber-500/50 rounded-lg p-3 text-center transition-colors">
+                    <p class="text-xs text-amber-400 font-medium">✨ Upload Partner Logo</p>
+                  </div>
+                </div>
+                <div *ngIf="sponsorLogoImage" class="pt-2">
+                  <div class="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Logo Scale</span>
+                    <span>{{sponsorLogoScale()}}%</span>
+                  </div>
+                  <input type="range" min="20" max="300" [value]="sponsorLogoScale()" (input)="sponsorLogoScale.set($any($event.target).value); drawCanvas()" class="w-full accent-amber-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+            <!-- Occasions & Holidays Controls -->
+            <div *ngIf="studioMode() === 'occasion'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-emerald-400">🌙 Occasions & Greetings</label>
+              
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-emerald-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Occasion Title (Arabic/English)</label>
+                  <input type="text" [value]="occasionTitle()" (input)="occasionTitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-amber-300 font-bold rounded px-3 py-1.5 text-sm text-right focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Greeting Text / Subtitle</label>
+                  <textarea rows="3" [value]="occasionSubtitle()" (input)="occasionSubtitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-gray-200 rounded px-3 py-1.5 text-xs text-right focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Car Reveal Controls -->
+            <div *ngIf="studioMode() === 'reveal'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-purple-400">🏎️ Vehicle Reveal & Teaser</label>
+              
+              <!-- Layout Style -->
+              <div class="space-y-1.5">
+                <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider">📐 Layout Style</label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button type="button" (click)="revealLayout.set('teaser'); drawCanvas()" [class]="revealLayout() === 'teaser' ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">🕶️ Dark Teaser</button>
+                  <button type="button" (click)="revealLayout.set('classified'); drawCanvas()" [class]="revealLayout() === 'classified' ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">🔒 Top Secret</button>
+                </div>
+              </div>
+
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-purple-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Teaser Subtext</label>
+                  <input type="text" [value]="revealSubtext()" (input)="revealSubtext.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-red-400 font-bold rounded px-3 py-1.5 text-xs focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Vehicle / Concept Name</label>
+                  <input type="text" [value]="revealCarName()" (input)="revealCarName.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white font-extrabold rounded px-3 py-1.5 text-sm focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Launch Tagline / Date</label>
+                  <input type="text" [value]="revealTagline()" (input)="revealTagline.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-purple-500">
+                </div>
+                <div class="pt-2">
+                  <div class="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Cinematic Dark Fog</span>
+                    <span>{{revealFogOpacity()}}%</span>
+                  </div>
+                  <input type="range" min="0" max="100" [value]="revealFogOpacity()" (input)="revealFogOpacity.set($any($event.target).value); drawCanvas()" class="w-full accent-purple-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+            <!-- Tech Showcase Controls -->
+            <div *ngIf="studioMode() === 'tech'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-blue-400">⚙️ Engineering Spec Showcase</label>
+              
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-blue-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Component / System Name</label>
+                  <input type="text" [value]="techTitle()" (input)="techTitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-cyan-400 font-bold rounded px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Technical Subtitle</label>
+                  <input type="text" [value]="techSubtitle()" (input)="techSubtitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Bottom Summary Tagline</label>
+                  <input type="text" [value]="techTagline()" (input)="techTagline.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500">
+                </div>
+              </div>
+
+              <!-- Tech Specs Grid Items -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-800">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-semibold text-gray-400">Specification Boxes (Grid)</label>
+                  <button (click)="addTechSpec()" class="text-[10px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded font-bold transition-colors">+ Add Spec</button>
+                </div>
+                <div *ngFor="let spec of techSpecs(); let idx = index" class="flex gap-2 items-center">
+                  <input type="text" [value]="spec" (input)="updateTechSpec(idx, $any($event.target).value)" class="flex-1 bg-slate-800 border border-slate-700 text-white rounded px-2.5 py-1 text-xs focus:outline-none focus:border-blue-500">
+                  <button (click)="removeTechSpec(idx)" class="text-red-400 hover:text-red-300 p-1">🗑️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Spotlight Mode Controls -->
+            <div *ngIf="studioMode() === 'spotlight'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-red-400">💡 Spotlight / Quote Showcase</label>
+              
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-red-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Quote Statement (Multi-line)</label>
+                  <textarea [value]="spotlightQuote()" (input)="spotlightQuote.set($any($event.target).value); drawCanvas()" rows="3" class="w-full bg-slate-800 border border-slate-700 text-white font-medium rounded px-3 py-1.5 text-xs focus:outline-none focus:border-red-500"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Person Name</label>
+                    <input type="text" [value]="spotlightName()" (input)="spotlightName.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Role / Position</label>
+                    <input type="text" [value]="spotlightRole()" (input)="spotlightRole.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-cyan-400 font-bold rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-red-500">
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Stat Badge Value</label>
+                    <input type="text" [value]="spotlightStatValue()" (input)="spotlightStatValue.set($any($event.target).value); drawCanvas()" placeholder="e.g. 4+ YEARS" class="w-full bg-slate-800 border border-slate-700 text-white font-bold rounded px-2.5 py-1 text-xs focus:outline-none focus:border-red-500">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Stat Badge Label</label>
+                    <input type="text" [value]="spotlightStatLabel()" (input)="spotlightStatLabel.set($any($event.target).value); drawCanvas()" placeholder="e.g. TEAM CAPTAIN" class="w-full bg-slate-800 border border-slate-700 text-gray-400 rounded px-2.5 py-1 text-xs focus:outline-none focus:border-red-500">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Telemetry Mode Controls -->
+            <div *ngIf="studioMode() === 'telemetry'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-cyan-400">📈 Telemetry & Data Dashboard</label>
+              
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-cyan-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Dashboard Title</label>
+                  <input type="text" [value]="telemetryTitle()" (input)="telemetryTitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-cyan-400 font-bold rounded px-3 py-1.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Dashboard Subtitle / Session</label>
+                  <input type="text" [value]="telemetrySubtitle()" (input)="telemetrySubtitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+              </div>
+
+              <!-- Metric Cards -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-800">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">Telemetry Metrics (Grid Readouts)</label>
+                <div *ngFor="let m of telemetryMetrics(); let idx = index" class="p-2.5 bg-slate-800/80 rounded border border-slate-700 space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <span class="text-[10px] text-gray-400">Label</span>
+                      <input type="text" [value]="m.label" (input)="updateTelemetryMetric(idx, 'label', $any($event.target).value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs font-semibold">
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-gray-400">Value Readout</span>
+                      <input type="text" [value]="m.value" (input)="updateTelemetryMetric(idx, 'value', $any($event.target).value)" class="w-full bg-slate-900 border border-slate-700 text-cyan-400 rounded px-2 py-1 text-xs font-bold">
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-gray-400 w-16">Bar: {{m.progress}}%</span>
+                    <input type="range" min="0" max="100" [value]="m.progress" (input)="updateTelemetryMetric(idx, 'progress', $any($event.target).value)" class="flex-1 accent-cyan-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Schedule Mode Controls -->
+            <div *ngIf="studioMode() === 'schedule'" class="pt-4 border-t border-slate-800 space-y-4">
+              <label class="block text-sm font-medium text-amber-400">📅 Race Schedule & Timetable</label>
+              
+              <div class="space-y-3 p-3 bg-slate-900 rounded border border-amber-900/50">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Timetable Header</label>
+                  <input type="text" [value]="scheduleTitle()" (input)="scheduleTitle.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white font-bold rounded px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-400 mb-1">Event Competition / Location</label>
+                  <input type="text" [value]="scheduleEventName()" (input)="scheduleEventName.set($any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-amber-400 font-bold rounded px-3 py-1.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+              </div>
+
+              <!-- Schedule Items -->
+              <div class="space-y-2 p-3 bg-slate-900 rounded border border-slate-800">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">Event Rows (Timeline)</label>
+                <div *ngFor="let item of scheduleItems(); let idx = index" class="p-2.5 bg-slate-800/80 rounded border border-slate-700 space-y-2">
+                  <div class="grid grid-cols-3 gap-2">
+                    <div>
+                      <span class="text-[10px] text-gray-400">Day / Pill</span>
+                      <input type="text" [value]="item.day" (input)="updateScheduleItem(idx, 'day', $any($event.target).value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs font-semibold">
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-gray-400">Time</span>
+                      <input type="text" [value]="item.time" (input)="updateScheduleItem(idx, 'time', $any($event.target).value)" class="w-full bg-slate-900 border border-slate-700 text-amber-400 rounded px-2 py-1 text-xs font-bold">
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-gray-400">Status</span>
+                      <select [value]="item.status" (change)="updateScheduleItem(idx, 'status', $any($event.target).value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs font-semibold">
+                        <option value="UPCOMING">UPCOMING</option>
+                        <option value="LIVE">🔴 LIVE</option>
+                        <option value="DONE">✓ COMPLETED</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-gray-400">Session / Event Title</span>
+                    <input type="text" [value]="item.event" (input)="updateScheduleItem(idx, 'event', $any($event.target).value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs font-bold">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stamps & Badges Layer -->
+            <div class="pt-4 border-t border-slate-800 space-y-3">
+              <label class="block text-sm font-medium text-gray-300">🏅 Stamps & Badges Layer</label>
+              <p class="text-xs text-gray-400">Click to toggle badges on your graphic. Drag them directly on the canvas!</p>
+              
+              <div class="space-y-2">
+                <div *ngFor="let st of stamps()" class="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <input type="checkbox" [checked]="st.active" (change)="toggleStamp(st.id)" class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-red-500 focus:ring-0 cursor-pointer">
+                      <span class="text-xs font-bold text-white">{{st.text}}</span>
+                      <span *ngIf="st.vectorType" class="px-1.5 py-0.2 bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] rounded font-mono">VECTOR</span>
+                    </div>
+                    <div class="flex items-center gap-1.5" *ngIf="st.active">
+                      <input type="color" [value]="st.bg" (input)="updateStamp(st.id, 'bg', $any($event.target).value)" class="w-5 h-5 rounded cursor-pointer p-0 border-0" title="Background Color">
+                      <input type="color" [value]="st.color" (input)="updateStamp(st.id, 'color', $any($event.target).value)" class="w-5 h-5 rounded cursor-pointer p-0 border-0" title="Text Color">
+                    </div>
+                  </div>
+
+                  <div *ngIf="st.active" class="flex gap-2 pt-1 border-t border-slate-800/60">
+                    <div class="flex-1">
+                      <input type="text" [value]="st.text" (input)="updateStamp(st.id, 'text', $any($event.target).value)" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-[11px] focus:outline-none focus:border-red-500">
+                    </div>
+                    <div class="w-24">
+                      <input type="range" min="14" max="60" [value]="st.size" (input)="updateStamp(st.id, 'size', $event)" class="w-full accent-red-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer mt-2" title="Size">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="p-4 border-t border-slate-800 bg-slate-900/50 space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <button 
+                (click)="downloadImage()"
+                [disabled]="!previewUrl()"
+                class="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-medium py-2.5 px-3 rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md">
+                <span>⬇️ Standard PNG</span>
+              </button>
+              <button 
+                (click)="exportWebP()"
+                [disabled]="!previewUrl()"
+                class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-medium py-2.5 px-3 rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md">
+                <span>⚡ Next-Gen WebP</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <button 
+                (click)="copyToClipboard()"
+                [disabled]="!previewUrl()"
+                class="w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-gray-200 hover:text-white font-medium py-2.5 px-3 rounded-lg text-xs border border-slate-700 transition-colors flex items-center justify-center gap-1.5">
+                <span>{{ clipboardStatus() === 'copied' ? '✅ Copied!' : '📋 Copy to Clipboard' }}</span>
+              </button>
+              <button 
+                (click)="export4K()"
+                [disabled]="!previewUrl() || isExporting4K()"
+                class="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 disabled:opacity-50 text-white font-bold py-2.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-orange-500/20">
+                <span>{{ isExporting4K() ? '⌛ Rendering 4K...' : '👑 4K Ultra-HD Export' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Area: Preview Canvas -->
+      <div class="flex-1 bg-[#0a0f18] rounded-xl border border-slate-800 overflow-hidden flex flex-col relative min-h-[600px]">
+        <div class="absolute top-4 left-4 z-10 flex gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="px-3 py-1.5 bg-black/50 backdrop-blur-md rounded-lg border border-white/10 text-xs font-medium text-white flex items-center gap-2 shadow-xl">
+              <div class="w-2 h-2 rounded-full bg-green-500"></div>
+              LIVE PREVIEW ({{canvasFormat() === 'story' ? '1080x1920' : (canvasFormat() === 'landscape' ? '1920x1080' : (canvasFormat() === 'portrait' ? '1080x1350' : '1080x1080'))}})
+            </div>
+
+            <!-- 🛡️ Brand Shield & Contrast Validator -->
+            <div [class]="brandContrastWarning() ? 'bg-amber-500/20 border-amber-500 text-amber-300 animate-pulse' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5">
+              <span>🛡️</span>
+              <span>{{ brandContrastWarning() ? 'LOW CONTRAST WARNING' : 'BRAND SHIELD ACTIVE' }}</span>
+            </div>
+
+            <button type="button" (click)="syncFactoryBrandKit()" class="px-2.5 py-1 bg-red-600/30 hover:bg-red-600 border border-red-500 rounded-lg text-white text-[11px] font-bold tracking-wider transition-all flex items-center gap-1">
+              <span>🔴</span> SYNC FACTORY BRAND KIT
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex-1 p-8 flex items-center justify-center overflow-auto custom-scrollbar bg-slate-900/50">
+          <div class="relative transition-all duration-300" [ngStyle]="{
+            'width': '100%', 
+            'max-width': canvasFormat() === 'story' ? '400px' : (canvasFormat() === 'landscape' ? '750px' : (canvasFormat() === 'portrait' ? '500px' : '600px')),
+            'aspect-ratio': canvasFormat() === 'story' ? '9/16' : (canvasFormat() === 'landscape' ? '16/9' : (canvasFormat() === 'portrait' ? '4/5' : '1/1'))
+          }">
+            <canvas 
+              #mainCanvas 
+              (mousedown)="onMouseDown($event)"
+              (mousemove)="onMouseMove($event)"
+              (mouseup)="onMouseUp()"
+              (mouseleave)="onMouseLeave()"
+              class="w-full h-full shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-lg bg-black transition-[cursor]"
+              [class.cursor-move]="isHoveringDraggable() && !dragState.active"
+              [class.cursor-grabbing]="dragState.active"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

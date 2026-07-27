@@ -1,0 +1,56 @@
+/* Global styles + design tokens */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-red: #d00007;
+  --brand-red-hover: #d00007;
+  --brand-red-soft: #d00007;
+  --brand-red-deep: #74090c;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+  background-color: rgb(1, 8, 22);
+  width: 100%;
+}
+
+body {
+  background-image: url('/bg-waves.svg');
+  background-attachment: scroll;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: rgb(1, 8, 22);
+}
+
+@media (pointer: fine) {
+  body {
+    background-attachment: fixed;
+  }
+}
+
+::selection {
+  background-color: rgba(208, 0, 7, 0.45);
+  color: #fff;
+}
+
+.heading-brand {
+  background: linear-gradient(135deg, var(--brand-red-soft) 0%, var(--brand-red) 45%, var(--brand-red-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  transition: filter 450ms ease, transform 450ms ease, letter-spacing 450ms ease;
+  filter: drop-shadow(0 0 0 transparent);
+}
+
+@media (hover: hover) {
+  .heading-brand:hover {
+    filter: drop-shadow(0 0 28px rgba(208, 0, 7, 0.55));
+    transform: translateY(-2px);
+    letter-spacing: 0.005em;
+  }
+}

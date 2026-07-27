@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444" stop-opacity="0"/>
+      <stop offset="15%" stop-color="#ef4444" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#fca5a5" stop-opacity="0.75"/>
+      <stop offset="85%" stop-color="#ef4444" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="line-grad-dim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7f1d1d" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#dc2626" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background fill matches the page so the SVG can sit as a full-page bg -->
+  <rect width="1920" height="1080" fill="rgb(1, 8, 22)"/>
+
+  <!-- Multiple flowing curves at various heights and thicknesses.
+       Each curve is a smooth Bezier S-curve spanning the viewport width. -->
+  <g fill="none">
+    <!-- Top band -->
+    <path d="M -100 120 C 400 60, 960 220, 1440 140 S 2020 200, 2020 220"
+          stroke="url(#line-grad-dim)" stroke-width="0.8"/>
+    <path d="M -100 180 C 480 120, 960 280, 1440 220 S 2020 280, 2020 300"
+          stroke="url(#line-grad)" stroke-width="1.2"/>
+    <path d="M -100 240 C 320 180, 960 320, 1440 280 S 2020 340, 2020 360"
+          stroke="url(#line-grad-dim)" stroke-width="0.9"/>
+
+    <!-- Upper-middle band -->
+    <path d="M -100 360 C 560 280, 960 460, 1440 380 S 2020 440, 2020 460"
+          stroke="url(#line-grad)" stroke-width="1.4"/>
+    <path d="M -100 420 C 400 340, 960 500, 1440 460 S 2020 520, 2020 540"
+          stroke="url(#line-grad-dim)" stroke-width="0.7"/>
+    <path d="M -100 500 C 640 420, 960 600, 1440 520 S 2020 580, 2020 600"
+          stroke="url(#line-grad)" stroke-width="1.6"/>
+
+    <!-- Lower-middle band -->
+    <path d="M -100 600 C 480 520, 960 700, 1440 620 S 2020 680, 2020 700"
+          stroke="url(#line-grad-dim)" stroke-width="0.9"/>
+    <path d="M -100 680 C 560 600, 960 780, 1440 700 S 2020 760, 2020 780"
+          stroke="url(#line-grad)" stroke-width="1.2"/>
+    <path d="M -100 760 C 320 680, 960 860, 1440 780 S 2020 840, 2020 860"
+          stroke="url(#line-grad-dim)" stroke-width="1"/>
+
+    <!-- Bottom band -->
+    <path d="M -100 880 C 400 800, 960 960, 1440 880 S 2020 940, 2020 960"
+          stroke="url(#line-grad)" stroke-width="1.3"/>
+    <path d="M -100 960 C 480 880, 960 1040, 1440 960 S 2020 1020, 2020 1040"
+          stroke="url(#line-grad-dim)" stroke-width="0.8"/>
+  </g>
+</svg>
