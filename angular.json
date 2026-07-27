@@ -22,8 +22,7 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"],
-            "outputMode": "static"
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {

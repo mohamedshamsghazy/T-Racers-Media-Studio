@@ -3,32 +3,13 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist/T-Racers-Media-Studio/browser",
-  "trailingSlash": false,
-  "cleanUrls": true,
-
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.(js|css|woff2|svg|jpg|jpeg|png|webp|ico)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    }
-  ],
-
-  "rewrites": [
-    { "source": "/api/SponsorshipCategory/:path*", "destination": "https://tracers-platform-api.vercel.app/api/SponsorshipCategory/:path*" },
-    { "source": "/api/SponsorshipCategory",        "destination": "https://tracers-platform-api.vercel.app/api/SponsorshipCategory" },
-    { "source": "/api/Sponsor/:path*",             "destination": "https://tracers-platform-api.vercel.app/api/Sponsor/:path*" },
-    { "source": "/api/Sponsor",                    "destination": "https://tracers-platform-api.vercel.app/api/Sponsor" },
-    { "source": "/api/(.*)",                       "destination": "https://tracers.runasp.net/api/$1" },
-    { "source": "/(.*)",                           "destination": "/index.html" }
+  "routes": [
+    { "src": "/api/SponsorshipCategory/(.+)", "dest": "https://tracers-platform-api.vercel.app/api/SponsorshipCategory/$1" },
+    { "src": "/api/SponsorshipCategory",      "dest": "https://tracers-platform-api.vercel.app/api/SponsorshipCategory" },
+    { "src": "/api/Sponsor/(.+)",             "dest": "https://tracers-platform-api.vercel.app/api/Sponsor/$1" },
+    { "src": "/api/Sponsor",                  "dest": "https://tracers-platform-api.vercel.app/api/Sponsor" },
+    { "src": "/api/(.*)",                     "dest": "https://tracers.runasp.net/api/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
