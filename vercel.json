@@ -3,7 +3,6 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist/T-Racers-Media-Studio/browser",
-  "framework": "angular",
   "trailingSlash": false,
   "cleanUrls": true,
 
