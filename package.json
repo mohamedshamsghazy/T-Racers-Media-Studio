@@ -18,6 +18,8 @@
     "@angular/router": "^20.1.0",
     "@ngneat/tailwind": "^7.0.3",
     "html-to-image": "^1.11.13",
+    "moveable": "^0.53.0",
+    "ngx-moveable": "^0.50.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

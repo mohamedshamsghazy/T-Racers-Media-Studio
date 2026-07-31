@@ -1,0 +1,286 @@
+<div class="h-screen w-full bg-[#06090e] text-white flex flex-col overflow-hidden">
+  <!-- Top Bar -->
+  <div class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/50">
+    <div class="flex items-center gap-4">
+      <span class="text-2xl">🎨</span>
+      <h1 class="font-bold text-lg tracking-wider">T-Racers Media Suite <span class="bg-red-600 text-[10px] px-2 py-1 rounded-full ml-2">UNIFIED</span></h1>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 mr-4 border-r border-slate-700 pr-4">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Presets:</span>
+        <select class="bg-slate-800 border-slate-700 text-sm rounded-lg px-4 py-2 outline-none text-red-400 font-bold"
+                (change)="applyPreset($any($event.target).value)">
+          <option value="achievement">Achievement</option>
+          <option value="victory">Victory</option>
+          <option value="empty">Blank Canvas</option>
+        </select>
+      </div>
+
+      <select class="bg-slate-800 border-slate-700 text-sm rounded-lg px-4 py-2 outline-none"
+              [ngModel]="format()" (ngModelChange)="format.set($event)">
+        <option value="story">9:16 Story</option>
+        <option value="square">1:1 Square</option>
+        <option value="portrait">4:5 Portrait</option>
+        <option value="landscape">16:9 Landscape</option>
+      </select>
+      
+      <button (click)="exportImage()" [disabled]="exporting()"
+              class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg shadow-red-600/30 transition-all flex items-center gap-2">
+        <span>{{ exporting() ? 'Exporting...' : 'Export High-Res' }}</span>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- LEFT PANEL: Assets / Layers -->
+    <div class="w-72 border-r border-slate-800 bg-slate-900/30 flex flex-col">
+      <div class="flex border-b border-slate-800">
+        <button (click)="leftPanelTab.set('assets')" 
+                [class]="leftPanelTab() === 'assets' ? 'border-b-2 border-red-500 text-white' : 'text-gray-400 hover:text-gray-200'"
+                class="flex-1 py-3 text-xs font-bold uppercase tracking-wider">
+          Assets
+        </button>
+        <button (click)="leftPanelTab.set('layers')" 
+                [class]="leftPanelTab() === 'layers' ? 'border-b-2 border-red-500 text-white' : 'text-gray-400 hover:text-gray-200'"
+                class="flex-1 py-3 text-xs font-bold uppercase tracking-wider">
+          Layers
+        </button>
+      </div>
+
+      <!-- ASSETS TAB -->
+      <div *ngIf="leftPanelTab() === 'assets'" class="flex-1 overflow-y-auto p-4 space-y-6">
+        
+        <div>
+          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Add Elements</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <button (click)="editor.addLayer({type: 'text', name: 'New Text', text: 'T-RACERS', fontSize: 80, fontFamily: 'Inter', fontWeight: '900', color: '#ffffff'})"
+                    class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg p-3 text-center flex flex-col items-center gap-2 transition-colors">
+              <span class="text-2xl">T</span>
+              <span class="text-[10px] font-bold uppercase">Heading</span>
+            </button>
+            <button (click)="editor.addLayer({type: 'text', name: 'Subtitle', text: 'Formula Student Team', fontSize: 32, fontFamily: 'Inter', fontWeight: '400', color: '#aaaaaa'})"
+                    class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg p-3 text-center flex flex-col items-center gap-2 transition-colors">
+              <span class="text-2xl">t</span>
+              <span class="text-[10px] font-bold uppercase">Body Text</span>
+            </button>
+            <button (click)="editor.addLayer({type: 'shape', name: 'Rectangle', width: 400, height: 200, backgroundColor: '#dc2626'})"
+                    class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg p-3 text-center flex flex-col items-center gap-2 transition-colors">
+              <span class="text-2xl">⬛</span>
+              <span class="text-[10px] font-bold uppercase">Rectangle</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LAYERS TAB -->
+      <div *ngIf="leftPanelTab() === 'layers'" class="flex-1 overflow-y-auto p-4 space-y-2">
+        <div *ngFor="let layer of editor.layers().slice().reverse()"
+             (click)="editor.selectLayer(layer.id)"
+             class="p-3 rounded-lg border cursor-pointer flex items-center justify-between"
+             [class.bg-red-600]="editor.selectedLayerIds().includes(layer.id)"
+             [class.border-red-500]="editor.selectedLayerIds().includes(layer.id)"
+             [class.bg-slate-800]="!editor.selectedLayerIds().includes(layer.id)"
+             [class.border-slate-700]="!editor.selectedLayerIds().includes(layer.id)">
+          <div class="flex items-center gap-3">
+            <span class="text-lg opacity-80">
+              <ng-container [ngSwitch]="layer.type">
+                <span *ngSwitchCase="'text'">T</span>
+                <span *ngSwitchCase="'image'">🖼️</span>
+                <span *ngSwitchCase="'shape'">⬛</span>
+              </ng-container>
+            </span>
+            <span class="text-xs font-bold truncate w-24">{{ layer.name }}</span>
+          </div>
+          
+          <div class="flex items-center gap-1 opacity-50 hover:opacity-100 transition-opacity">
+            <button (click)="$event.stopPropagation(); editor.updateLayer(layer.id, {hidden: !layer.hidden})"
+                    class="p-1 hover:bg-black/20 rounded">
+              {{ layer.hidden ? '👁️‍🗨️' : '👁️' }}
+            </button>
+            <button (click)="$event.stopPropagation(); editor.updateLayer(layer.id, {locked: !layer.locked})"
+                    class="p-1 hover:bg-black/20 rounded">
+              {{ layer.locked ? '🔒' : '🔓' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER CANVAS -->
+    <div class="flex-1 relative bg-slate-950 overflow-hidden flex items-center justify-center pattern-grid-lg">
+      
+      <!-- The Scaled Viewport Container -->
+      <div class="relative origin-center shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-transparent"
+           [ngStyle]="{
+             'width': targetWidth + 'px',
+             'height': targetHeight + 'px',
+             'transform': 'scale(' + displayScale + ')'
+           }">
+        
+        <!-- The Actual Render Target -->
+        <div #renderTarget class="absolute inset-0 overflow-hidden bg-black" id="unified-canvas">
+          
+          <div *ngFor="let layer of editor.layers()"
+               [id]="layer.id"
+               class="absolute"
+               (mousedown)="$event.stopPropagation(); editor.selectLayer(layer.id)"
+               [ngStyle]="{
+                 'display': layer.hidden ? 'none' : 'block',
+                 'left': layer.x + 'px',
+                 'top': layer.y + 'px',
+                 'width': layer.width + 'px',
+                 'height': layer.height + 'px',
+                 'z-index': layer.zIndex,
+                 'opacity': layer.opacity,
+                 'transform': 'rotate(' + layer.rotation + 'deg)',
+                 'background-color': layer.type === 'shape' ? layer.backgroundColor : 'transparent',
+                 'color': layer.color,
+                 'font-family': layer.fontFamily,
+                 'font-size': layer.fontSize + 'px',
+                 'font-weight': layer.fontWeight,
+                 'mix-blend-mode': layer.blendMode || 'normal',
+                 'backdrop-filter': layer.blur ? 'blur(' + layer.blur + 'px)' : 'none'
+               }">
+            
+            <ng-container *ngIf="layer.type === 'text'">
+              <div class="w-full h-full whitespace-pre-wrap leading-none" [style.text-align]="layer.textAlign">
+                {{ layer.text }}
+              </div>
+            </ng-container>
+            
+          </div>
+
+        </div>
+
+        <!-- Transform Controls Overlay (Moveable) -->
+        <ngx-moveable
+          *ngIf="editor.selectedLayerIds().length > 0 && !exporting()"
+          [target]="'#' + editor.selectedLayerIds()[0]"
+          [draggable]="true"
+          [resizable]="true"
+          [rotatable]="true"
+          [snappable]="true"
+          [snapCenter]="true"
+          (drag)="onDrag($event)"
+          (resize)="onResize($event)"
+          (rotate)="onRotate($event)"
+        ></ngx-moveable>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Properties -->
+    <div class="w-80 border-l border-slate-800 bg-slate-900/30 flex flex-col">
+      <div class="p-4 border-b border-slate-800 font-bold uppercase tracking-wider text-sm text-gray-400">
+        Properties
+      </div>
+      
+      <div *ngIf="editor.selectedLayer() as layer; else noSelection" class="p-4 space-y-6 overflow-y-auto">
+        <!-- Transform -->
+        <div>
+          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Transform</h3>
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <div class="flex flex-col">
+              <label class="text-[10px] text-gray-400 mb-1">X</label>
+              <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.x" (ngModelChange)="editor.updateLayer(layer.id, {x: $event})">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-[10px] text-gray-400 mb-1">Y</label>
+              <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.y" (ngModelChange)="editor.updateLayer(layer.id, {y: $event})">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-[10px] text-gray-400 mb-1">W</label>
+              <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.width" (ngModelChange)="editor.updateLayer(layer.id, {width: $event})">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-[10px] text-gray-400 mb-1">H</label>
+              <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.height" (ngModelChange)="editor.updateLayer(layer.id, {height: $event})">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col">
+              <label class="text-[10px] text-gray-400 mb-1">Rotation</label>
+              <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.rotation" (ngModelChange)="editor.updateLayer(layer.id, {rotation: $event})">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-[10px] text-gray-400 mb-1">Opacity</label>
+              <input type="number" step="0.1" min="0" max="1" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.opacity" (ngModelChange)="editor.updateLayer(layer.id, {opacity: $event})">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Text Properties -->
+        <div *ngIf="layer.type === 'text'">
+           <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Text</h3>
+           <textarea class="w-full bg-slate-800 rounded px-3 py-2 text-sm border border-slate-700 min-h-[80px] mb-3"
+                     [ngModel]="layer.text" (ngModelChange)="editor.updateLayer(layer.id, {text: $event})"></textarea>
+           
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Font Size</label>
+             <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700"
+                    [ngModel]="layer.fontSize" (ngModelChange)="editor.updateLayer(layer.id, {fontSize: $event})">
+           </div>
+           
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Color</label>
+             <input type="color" class="bg-slate-800 rounded border border-slate-700 h-8 w-full p-0 cursor-pointer"
+                    [ngModel]="layer.color" (ngModelChange)="editor.updateLayer(layer.id, {color: $event})">
+           </div>
+        </div>
+
+        <!-- Shape Properties -->
+        <div *ngIf="layer.type === 'shape'">
+           <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Fill</h3>
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Background Color</label>
+             <input type="color" class="bg-slate-800 rounded border border-slate-700 h-8 w-full p-0 cursor-pointer"
+                    [ngModel]="layer.backgroundColor" (ngModelChange)="editor.updateLayer(layer.id, {backgroundColor: $event})">
+           </div>
+        </div>
+
+        <!-- Advanced Effects -->
+        <div>
+           <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Effects</h3>
+           
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Blend Mode</label>
+             <select class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.blendMode || 'normal'" (ngModelChange)="editor.updateLayer(layer.id, {blendMode: $event})">
+               <option value="normal">Normal</option>
+               <option value="screen">Screen</option>
+               <option value="overlay">Overlay</option>
+               <option value="multiply">Multiply</option>
+               <option value="color-dodge">Color Dodge</option>
+             </select>
+           </div>
+           
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Backdrop Blur (px)</label>
+             <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                    [ngModel]="layer.blur || 0" (ngModelChange)="editor.updateLayer(layer.id, {blur: $event})">
+           </div>
+        </div>
+      </div>
+      
+      <ng-template #noSelection>
+        <div class="flex-1 flex items-center justify-center text-gray-500 text-sm">
+          Select a layer to edit properties
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

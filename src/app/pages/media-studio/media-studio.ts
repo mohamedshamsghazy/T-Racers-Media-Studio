@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AchievementGenerator } from '../achievement-generator/achievement-generator';
+import { CreativeStudio } from '../creative-studio/creative-studio';
 import { FrameGenerator } from '../frame-generator/frame-generator';
 import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-media-studio',
   standalone: true,
-  imports: [CommonModule, AchievementGenerator, FrameGenerator],
+  imports: [CommonModule, CreativeStudio, FrameGenerator],
   templateUrl: './media-studio.html'
 })
 export class MediaStudio implements OnInit {
