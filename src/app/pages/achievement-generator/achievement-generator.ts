@@ -103,7 +103,7 @@ export class AchievementGenerator implements OnInit {
 
   // Studio Features: Multi-Format, Presets, Hero Image, Stamps, and 6 Creative Modes
   canvasFormat = signal<'square' | 'story' | 'landscape' | 'portrait'>('square');
-  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule'>('achievements');
+  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison'>('achievements');
 
   // Hiring Mode Signals
   hiringDepartment = signal('MECHANICAL & AERODYNAMICS');
@@ -193,6 +193,23 @@ export class AchievementGenerator implements OnInit {
   ]);
   scheduleBoxOffsetX = signal(0);
   scheduleBoxOffsetY = signal(0);
+
+  // Season Comparison Mode Signals
+  compTitle = signal('SEASON COMPARISON');
+  compEventLabel = signal('FORMULA STUDENT UK');
+  compLastSeason = signal('FSUK 2024');
+  compThisSeason = signal('FSUK 2025');
+  compRows = signal([
+    { event: 'PROJECT MANAGEMENT', last: '—', current: '1ST 🥇', improved: true },
+    { event: 'BUSINESS PLAN', last: '—', current: '3RD 🥉', improved: true },
+    { event: 'DESIGN', last: '7TH', current: '5TH', improved: true },
+    { event: 'COST & MANUFACTURING', last: '10TH', current: '8TH', improved: true },
+    { event: 'LAP TIME SIMULATION', last: '14TH', current: '9TH', improved: true },
+    { event: 'OVERALL', last: '—', current: '3RD', improved: true }
+  ]);
+  compBoxOffsetX = signal(0);
+  compBoxOffsetY = signal(0);
+  compHighlightImproved = signal(true);
 
   // Visual Effects & Overlays Layer Signals
   showCarbonFiber = signal(false);
@@ -1007,6 +1024,8 @@ export class AchievementGenerator implements OnInit {
       this.drawTelemetryMode(ctx, w, h);
     } else if (mode === 'schedule') {
       this.drawScheduleMode(ctx, w, h);
+    } else if (mode === 'comparison') {
+      this.drawComparisonMode(ctx, w, h);
     } else if (this.achievementsLayout() === 'podium') {
       this.drawAchievementsPodium(ctx, w, h);
     } else if (this.achievementsLayout() === 'minimal') {
@@ -2778,5 +2797,182 @@ export class AchievementGenerator implements OnInit {
     this.universalContentOffsetX.set(0);
     this.universalContentOffsetY.set(0);
     this.drawCanvas();
+  }
+
+  addCompRow() {
+    this.compRows.set([...this.compRows(), { event: 'NEW EVENT', last: '—', current: '—', improved: false }]);
+    this.drawCanvas();
+  }
+
+  updateCompRow(idx: number, field: 'event' | 'last' | 'current' | 'improved', value: any) {
+    const rows = this.compRows().map((r, i) => {
+      if (i === idx) return { ...r, [field]: field === 'improved' ? Boolean(value) : value };
+      return r;
+    });
+    this.compRows.set(rows);
+    this.drawCanvas();
+  }
+
+  removeCompRow(idx: number) {
+    this.compRows.set(this.compRows().filter((_, i) => i !== idx));
+    this.drawCanvas();
+  }
+
+  drawComparisonMode(ctx: CanvasRenderingContext2D, w: number, h: number) {
+    ctx.save();
+
+    // Background gradient if no image
+    if (!this.bgImage()) {
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#050b14');
+      grad.addColorStop(0.5, '#0a0f1e');
+      grad.addColorStop(1, '#060b16');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    const accent = this.universalAccentColor();
+    const borderColor = this.universalBorderColor();
+    const boxBg = this.universalBoxBgColor();
+    const titleColor = this.universalTitleColor();
+    const subColor = this.universalSubColor();
+    const bodyColor = this.universalBodyColor();
+
+    // === HEADER SECTION ===
+    const headerY = h * 0.10;
+
+    // Event label (small tag above title)
+    ctx.textAlign = 'center';
+    ctx.font = `700 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
+    ctx.fillStyle = accent;
+    // @ts-ignore
+    ctx.letterSpacing = '5px';
+    ctx.fillText((this.compEventLabel() || '').toUpperCase(), w / 2, headerY);
+    // @ts-ignore
+    ctx.letterSpacing = '0px';
+
+    // Main Title
+    const titleSize = Math.round(w * 0.065);
+    ctx.font = `900 ${titleSize}px "Orbitron", "Inter", sans-serif`;
+    ctx.fillStyle = titleColor;
+    ctx.shadowColor = `${accent}66`;
+    ctx.shadowBlur = 30;
+    ctx.fillText((this.compTitle() || '').toUpperCase(), w / 2, headerY + titleSize * 1.4);
+    ctx.shadowBlur = 0;
+
+    // Decorative divider line
+    const divY = headerY + titleSize * 2.0;
+    const divW = w * 0.6;
+    const divX = (w - divW) / 2;
+    const divGrad = ctx.createLinearGradient(divX, 0, divX + divW, 0);
+    divGrad.addColorStop(0, 'transparent');
+    divGrad.addColorStop(0.3, accent);
+    divGrad.addColorStop(0.7, accent);
+    divGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = divGrad;
+    ctx.fillRect(divX, divY, divW, 3);
+
+    // === COLUMN HEADERS ===
+    const colHeaderY = divY + 55;
+    const tableW = w * 0.88;
+    const tableX = (w - tableW) / 2 + Number(this.compBoxOffsetX());
+    const col1W = tableW * 0.45;
+    const col2W = tableW * 0.255;
+    const col3W = tableW * 0.255;
+    const colGap = tableW * 0.02;
+
+    const drawColumnHeader = (label: string, cx: number, cy: number, cw: number, isAccent = false) => {
+      ctx.fillStyle = isAccent ? `${accent}22` : `${borderColor}18`;
+      ctx.strokeStyle = isAccent ? accent : `${borderColor}55`;
+      ctx.lineWidth = isAccent ? 2 : 1.5;
+      ctx.beginPath();
+      ctx.roundRect(cx, cy - 28, cw, 40, 10);
+      ctx.fill(); ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.font = `800 ${Math.round(w * 0.023)}px "Inter", sans-serif`;
+      ctx.fillStyle = isAccent ? accent : subColor;
+      // @ts-ignore
+      ctx.letterSpacing = '2px';
+      ctx.fillText(label.toUpperCase(), cx + cw / 2, cy);
+      // @ts-ignore
+      ctx.letterSpacing = '0px';
+    };
+
+    drawColumnHeader('EVENT', tableX, colHeaderY, col1W);
+    drawColumnHeader(this.compLastSeason() || 'LAST SEASON', tableX + col1W + colGap, colHeaderY, col2W);
+    drawColumnHeader(this.compThisSeason() || 'THIS SEASON', tableX + col1W + col2W + colGap * 2, colHeaderY, col3W, true);
+
+    // === ROWS ===
+    const rows = this.compRows();
+    const rowH = Math.min(70, (h * 0.52) / Math.max(rows.length, 1));
+    const rowGap = 10;
+    const startY = colHeaderY + 28 + Number(this.compBoxOffsetY());
+
+    rows.forEach((row, i) => {
+      const ry = startY + i * (rowH + rowGap);
+      const isImproved = row.improved && this.compHighlightImproved();
+
+      // Row BG
+      ctx.fillStyle = isImproved ? `${accent}12` : `${boxBg}cc`;
+      ctx.strokeStyle = isImproved ? `${accent}55` : `${borderColor}33`;
+      ctx.lineWidth = isImproved ? 1.5 : 1;
+      ctx.beginPath();
+      ctx.roundRect(tableX, ry, tableW, rowH, 12);
+      ctx.fill(); ctx.stroke();
+
+      // If improved: left accent bar
+      if (isImproved) {
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.roundRect(tableX, ry, 4, rowH, [12, 0, 0, 12]);
+        ctx.fill();
+      }
+
+      const textY = ry + rowH / 2 + Math.round(w * 0.012);
+
+      // Event name
+      ctx.textAlign = 'left';
+      ctx.font = `700 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
+      ctx.fillStyle = bodyColor;
+      ctx.fillText((row.event || '').toUpperCase(), tableX + 22, textY);
+
+      // Last season value (dimmed)
+      const lastVal = row.last || '—';
+      ctx.textAlign = 'center';
+      ctx.font = `800 ${Math.round(w * 0.028)}px "Orbitron", "Inter", sans-serif`;
+      ctx.fillStyle = lastVal === '—' ? `${bodyColor}55` : `${bodyColor}88`;
+      ctx.fillText(lastVal, tableX + col1W + colGap + col2W / 2, textY);
+
+      // This season value (bright)
+      const currVal = row.current || '—';
+      ctx.fillStyle = isImproved ? accent : titleColor;
+      ctx.shadowColor = isImproved ? `${accent}99` : 'transparent';
+      ctx.shadowBlur = isImproved ? 12 : 0;
+      ctx.fillText(currVal, tableX + col1W + col2W + colGap * 2 + col3W / 2, textY);
+      ctx.shadowBlur = 0;
+
+      // Arrow indicator for improved rows
+      if (isImproved && row.last !== '—') {
+        const arrowX = tableX + col1W + colGap + col2W / 2 + col2W * 0.42;
+        ctx.font = `900 ${Math.round(w * 0.022)}px "Inter", sans-serif`;
+        ctx.fillStyle = accent;
+        ctx.textAlign = 'left';
+        ctx.fillText('→', arrowX, textY);
+      }
+    });
+
+    // === FOOTER ===
+    const footerY = h * 0.92;
+    ctx.textAlign = 'center';
+    ctx.font = `600 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
+    ctx.fillStyle = `${bodyColor}66`;
+    // @ts-ignore
+    ctx.letterSpacing = '3px';
+    ctx.fillText('WWW.TRACERSMEC.COM // FORMULA STUDENT', w / 2, footerY);
+    // @ts-ignore
+    ctx.letterSpacing = '0px';
+
+    ctx.restore();
   }
 }
