@@ -200,12 +200,12 @@ export class AchievementGenerator implements OnInit {
   compLastSeason = signal('FSUK 2024');
   compThisSeason = signal('FSUK 2025');
   compRows = signal([
-    { event: 'PROJECT MANAGEMENT', last: '—', current: '1ST 🥇', improved: true },
-    { event: 'BUSINESS PLAN', last: '—', current: '3RD 🥉', improved: true },
-    { event: 'DESIGN', last: '7TH', current: '5TH', improved: true },
-    { event: 'COST & MANUFACTURING', last: '10TH', current: '8TH', improved: true },
-    { event: 'LAP TIME SIMULATION', last: '14TH', current: '9TH', improved: true },
-    { event: 'OVERALL', last: '—', current: '3RD', improved: true }
+    { event: 'PROJECT MANAGEMENT', last: '1ST', current: '1ST 🥇', improved: false },
+    { event: 'BUSINESS PLAN PRESENTATION', last: '5TH', current: '3RD 🥉', improved: true },
+    { event: 'DESIGN', last: '23RD', current: '5TH', improved: true },
+    { event: 'COST & MANUFACTURING', last: '23RD', current: '8TH', improved: true },
+    { event: 'LAP TIME SIMULATION', last: '—', current: '9TH', improved: true },
+    { event: 'OVERALL', last: '20TH', current: '3RD 🏆', improved: true }
   ]);
   compBoxOffsetX = signal(0);
   compBoxOffsetY = signal(0);
