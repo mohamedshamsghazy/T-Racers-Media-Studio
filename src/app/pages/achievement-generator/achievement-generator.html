@@ -350,6 +350,20 @@
                 </label>
               </div>
 
+              <!-- Toggle Sponsor Entire Layer -->
+              <div class="flex items-center gap-3 mt-2">
+                <input 
+                  type="checkbox" 
+                  id="showSponsorLayer"
+                  [checked]="showSponsorLayer()" 
+                  (change)="showSponsorLayer.set($any($event.target).checked); drawCanvas()"
+                  class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-red-500 focus:ring-red-500 focus:ring-offset-slate-900"
+                >
+                <label for="showSponsorLayer" class="text-xs font-bold text-red-400 select-none cursor-pointer">
+                  Show Sponsors
+                </label>
+              </div>
+
               <!-- Toggle Top Title Sponsor Badge -->
               <div class="p-2.5 bg-slate-900 rounded border border-slate-700/60 mt-2 space-y-2">
                 <div class="flex items-center gap-2">

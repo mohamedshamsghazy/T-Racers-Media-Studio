@@ -87,6 +87,7 @@ export class AchievementGenerator implements OnInit {
   titleOffsetY = signal(0);
   bannerOffsetY = signal(0);
   hiddenSponsorIds = signal<number[]>([]);
+  showSponsorLayer = signal(true);
   sponsorCustomizations = signal<Record<number, {scale: number, offsetX: number, offsetY: number}>>({});
   expandedSponsorSettingsId = signal<number | null>(null);
 
@@ -1206,7 +1207,7 @@ export class AchievementGenerator implements OnInit {
     // 7. Sleek Sponsor Banner
     const sponsorsToDraw = this.sponsors().filter(s => !this.hiddenSponsorIds().includes(s.id));
     
-    if (sponsorsToDraw.length > 0) {
+    if (sponsorsToDraw.length > 0 && this.showSponsorLayer()) {
       const margin = 20;
       const bannerScaleRatio = this.bannerScale() / 100;
       const footerOffset = this.showFooterBar() ? 46 : 0;
