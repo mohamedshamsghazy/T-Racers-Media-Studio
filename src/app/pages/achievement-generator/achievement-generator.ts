@@ -2827,67 +2827,50 @@ export class AchievementGenerator implements OnInit {
     const border = this.universalBorderColor();
     const titleCol = this.universalTitleColor();
     const bodyCol = this.universalBodyColor();
+    const dimCol = 'rgba(255,255,255,0.2)';
 
-    // ─── 1. BACKGROUND OVERLAY (Clean cinematic vignette) ───
+    // ─── 1. BACKGROUND (Deep Vignette + Tech Dots) ───
     if (!this.bgImage()) {
       const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.8);
-      bg.addColorStop(0, '#11151c');
-      bg.addColorStop(1, '#05070a');
+      bg.addColorStop(0, '#0a0d14');
+      bg.addColorStop(1, '#020305');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
     } else {
-      // Dark overlay over the image
-      const overlay = ctx.createLinearGradient(0, 0, 0, h);
-      overlay.addColorStop(0, 'rgba(0,0,0,0.6)');
-      overlay.addColorStop(0.5, 'rgba(0,0,0,0.4)');
-      overlay.addColorStop(1, 'rgba(0,0,0,0.9)');
+      const overlay = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.9);
+      overlay.addColorStop(0, 'rgba(0,0,0,0.5)');
+      overlay.addColorStop(1, 'rgba(0,0,0,0.95)');
       ctx.fillStyle = overlay;
       ctx.fillRect(0, 0, w, h);
     }
 
-    // ─── 2. HEADER ───
-    const hdrTop = h * 0.12;
+    // Dot grid background
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    for (let x = 0; x < w; x += 40) {
+      for (let y = 0; y < h; y += 40) {
+        ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // ─── 2. HEADER (Cyber/Racing Style) ───
+    const hdrTop = h * 0.08;
     ctx.textAlign = 'center';
     
     // Main Title
-    const mainTitle = (this.compTitle() || 'SEASON COMPARISON').toUpperCase();
-    ctx.font = `900 ${Math.round(w * 0.055)}px "Orbitron", "Inter", sans-serif`;
+    const mainTitle = (this.compTitle() || 'PERFORMANCE TELEMETRY').toUpperCase();
+    ctx.font = `900 ${Math.round(w * 0.045)}px "Orbitron", "Inter", sans-serif`;
     ctx.fillStyle = titleCol;
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 20;
     // @ts-ignore
-    ctx.letterSpacing = '4px';
+    ctx.letterSpacing = '6px';
     ctx.fillText(mainTitle, w / 2, hdrTop);
-    // @ts-ignore
-    ctx.letterSpacing = '0px';
-    ctx.shadowBlur = 0;
-
-    // Subtitle (VS)
-    const vsTop = hdrTop + h * 0.05;
-    ctx.font = `800 ${Math.round(w * 0.022)}px "Inter", sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    // @ts-ignore
-    ctx.letterSpacing = '2px';
     
-    const lastS = this.compLastSeason().toUpperCase();
-    const thisS = this.compThisSeason().toUpperCase();
-    const vsText = ` VS `;
-    
-    // Draw "2024 VS 2025" with VS in red
-    const lastW = ctx.measureText(lastS).width;
-    const vsW = ctx.measureText(vsText).width;
-    const thisW = ctx.measureText(thisS).width;
-    const totalW = lastW + vsW + thisW;
-    let currX = (w - totalW) / 2;
-    
-    ctx.textAlign = 'left';
-    ctx.fillText(lastS, currX, vsTop);
-    currX += lastW;
+    // Subtitle
+    const subTitle = `${this.compLastSeason()}  //  ${this.compThisSeason()}`.toUpperCase();
+    ctx.font = `700 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
     ctx.fillStyle = accent;
-    ctx.fillText(vsText, currX, vsTop);
-    currX += vsW;
-    ctx.fillStyle = titleCol;
-    ctx.fillText(thisS, currX, vsTop);
+    // @ts-ignore
+    ctx.letterSpacing = '10px';
+    ctx.fillText(subTitle, w / 2, hdrTop + h * 0.035);
     // @ts-ignore
     ctx.letterSpacing = '0px';
 
@@ -2900,169 +2883,167 @@ export class AchievementGenerator implements OnInit {
       badgeRows = allRows.slice(0, allRows.length - 1);
     }
 
-    // ─── 3. HERO (OVERALL RANK) ───
-    let listStartY = h * 0.28;
-    
+    // Helper: Parse Rank to Percentage (1st = 100%, 40th = 5%)
+    const parseRankPerc = (rankStr: string) => {
+      const num = parseInt(rankStr.replace(/[^0-9]/g, ''));
+      if (isNaN(num)) return 0.1;
+      return Math.max(0.05, 1 - (num - 1) / 35); // Assuming 35 is a "bad" rank for visual scaling
+    };
+
+    // ─── 3. HERO: THE RPM GAUGE (OVERALL) ───
+    const dialCy = h * 0.35;
+    const dialR = w * 0.16;
+
     if (heroRow) {
-      const heroCenterY = h * 0.32;
+      const oldP = parseRankPerc(heroRow.last);
+      const newP = parseRankPerc(heroRow.current);
+
+      // Outer dashed ring
+      ctx.save();
+      ctx.translate(w / 2, dialCy);
+      ctx.strokeStyle = dimCol;
+      ctx.lineWidth = 3;
+      ctx.setLineDash([4, 8]);
+      ctx.beginPath();
+      ctx.arc(0, 0, dialR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
       
-      // "OVERALL RANK" label
+      // Dial Background Track
+      ctx.beginPath();
+      ctx.arc(0, 0, dialR - 15, Math.PI * 0.75, Math.PI * 2.25);
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 12;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Old Season Arc (Grey)
+      const oldAngle = Math.PI * 0.75 + (Math.PI * 1.5) * oldP;
+      ctx.beginPath();
+      ctx.arc(0, 0, dialR - 15, Math.PI * 0.75, oldAngle);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 12;
+      ctx.stroke();
+
+      // New Season Arc (Glowing Red)
+      const newAngle = Math.PI * 0.75 + (Math.PI * 1.5) * newP;
+      ctx.beginPath();
+      ctx.arc(0, 0, dialR - 15, Math.PI * 0.75, newAngle);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 12;
+      ctx.shadowColor = accent;
+      ctx.shadowBlur = 20;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Inner glow radial
+      const innerGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, dialR);
+      innerGlow.addColorStop(0, `${accent}00`);
+      innerGlow.addColorStop(0.8, `${accent}11`);
+      innerGlow.addColorStop(1, `${accent}33`);
+      ctx.fillStyle = innerGlow;
+      ctx.beginPath(); ctx.arc(0, 0, dialR - 20, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // Dial Text
       ctx.textAlign = 'center';
-      ctx.font = `700 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
-      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      
+      // "OVERALL"
+      ctx.font = `700 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
       // @ts-ignore
       ctx.letterSpacing = '6px';
-      ctx.fillText(heroRow.event.toUpperCase(), w / 2, heroCenterY - h * 0.08);
+      ctx.fillText(heroRow.event.toUpperCase(), w / 2, dialCy - dialR * 0.35);
       // @ts-ignore
       ctx.letterSpacing = '0px';
 
-      // Old Rank (Small/Grey) ➔ New Rank (Huge/Red)
-      const oldRank = heroRow.last.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      const newRank = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      
-      const oldSz = Math.round(w * 0.05);
-      const arrSz = Math.round(w * 0.05);
-      const newSz = Math.round(w * 0.16); // Massive
-
-      ctx.font = `800 ${oldSz}px "Orbitron", sans-serif`;
-      const oW = ctx.measureText(oldRank).width;
-      ctx.font = `900 ${arrSz}px "Inter", sans-serif`;
-      const aW = ctx.measureText(' ➔ ').width;
-      ctx.font = `900 ${newSz}px "Orbitron", sans-serif`;
-      const nW = ctx.measureText(newRank).width;
-      
-      const combinedW = oW + aW + nW;
-      let startX = (w - combinedW) / 2;
-      
-      // Draw Old Rank
-      ctx.textAlign = 'left';
-      ctx.font = `800 ${oldSz}px "Orbitron", sans-serif`;
-      ctx.fillStyle = 'rgba(255,255,255,0.3)';
-      ctx.fillText(oldRank, startX, heroCenterY);
-      startX += oW;
-      
-      // Draw Arrow
-      ctx.font = `900 ${arrSz}px "Inter", sans-serif`;
-      ctx.fillStyle = accent;
-      ctx.shadowColor = accent;
-      ctx.shadowBlur = 10;
-      // Adjust arrow Y to vertically align somewhat with the huge text
-      ctx.fillText(' ➔ ', startX, heroCenterY - h * 0.01);
-      ctx.shadowBlur = 0;
-      startX += aW;
-
-      // Draw New Rank
-      ctx.font = `900 ${newSz}px "Orbitron", sans-serif`;
+      // Massive Rank
+      const cleanNew = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      ctx.font = `900 ${Math.round(w * 0.12)}px "Orbitron", sans-serif`;
       ctx.fillStyle = '#ffffff';
-      
-      // Text drop shadow for the huge rank
-      ctx.shadowColor = 'rgba(0,0,0,0.8)';
-      ctx.shadowBlur = 30;
-      ctx.fillText(newRank, startX, heroCenterY + h * 0.03); // Baseline adjusted
-      ctx.shadowBlur = 0;
-      
-      // Add a subtle glowing underline under the new rank
-      const uLineY = heroCenterY + h * 0.045;
-      const uGrad = ctx.createLinearGradient(startX, 0, startX + nW, 0);
-      uGrad.addColorStop(0, `${accent}00`);
-      uGrad.addColorStop(0.5, accent);
-      uGrad.addColorStop(1, `${accent}00`);
-      ctx.fillStyle = uGrad;
       ctx.shadowColor = accent;
-      ctx.shadowBlur = 15;
-      ctx.fillRect(startX, uLineY, nW, 4);
+      ctx.shadowBlur = 30;
+      ctx.fillText(cleanNew, w / 2, dialCy + dialR * 0.15);
       ctx.shadowBlur = 0;
 
-      listStartY = heroCenterY + h * 0.12;
+      // "UP FROM X"
+      ctx.font = `700 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
+      ctx.fillStyle = accent;
+      ctx.fillText(`▲ UP FROM ${heroRow.last}`, w / 2, dialCy + dialR * 0.45);
     }
 
-    // ─── 4. EVENTS LIST (CLEAN GLASS BARS) ───
+    // ─── 4. TELEMETRY BARS (EVENTS) ───
     if (badgeRows.length > 0) {
-      const listW = w * 0.75; // 75% width centered
-      const listX = (w - listW) / 2;
-      const maxRows = 6;
-      const rowsToDraw = badgeRows.slice(0, maxRows);
+      const cols = 2;
+      const rows = Math.ceil(badgeRows.length / cols);
+      const startY = dialCy + dialR + h * 0.08;
       
-      const availableH = h * 0.88 - listStartY;
-      const barH = Math.min(Math.round(h * 0.075), Math.floor((availableH - (rowsToDraw.length - 1) * 12) / rowsToDraw.length));
-      const barGap = 12;
+      const barZoneW = w * 0.85;
+      const barZoneX = (w - barZoneW) / 2;
+      const colW = (barZoneW - w * 0.08) / 2;
+      const rowH = h * 0.085;
+      const gapY = h * 0.035;
 
-      rowsToDraw.forEach((row, i) => {
-        const by = listStartY + i * (barH + barGap);
-        const cy = by + barH / 2;
+      badgeRows.forEach((row, i) => {
+        const c = i % cols;
+        const r = Math.floor(i / cols);
+        const bx = barZoneX + c * (colW + w * 0.08);
+        const by = startY + r * (rowH + gapY);
+
+        const oldP = parseRankPerc(row.last);
+        const newP = parseRankPerc(row.current);
         const isImproved = row.improved && this.compHighlightImproved();
 
-        // Bar Background
-        ctx.fillStyle = 'rgba(255,255,255,0.03)';
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(listX, by, listW, barH, 8);
-        ctx.fill(); ctx.stroke();
+        const cleanOld = row.last || '—';
+        const cleanNew = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
 
-        // Left Edge Accent
-        if (isImproved) {
-          ctx.fillStyle = accent;
-          ctx.shadowColor = accent;
-          ctx.shadowBlur = 10;
-          ctx.beginPath();
-          ctx.roundRect(listX - 1, by - 1, 6, barH + 2, [8, 0, 0, 8]);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
-
-        // Left Content (Event Name)
+        // Event Title (Above the bar)
         ctx.textAlign = 'left';
-        ctx.font = `700 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
-        ctx.fillStyle = '#ffffff';
+        ctx.font = `800 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
+        ctx.fillStyle = titleCol;
         // @ts-ignore
         ctx.letterSpacing = '1px';
-        ctx.fillText(row.event.toUpperCase(), listX + listW * 0.04, cy + w * 0.007);
+        ctx.fillText(row.event.toUpperCase(), bx, by);
         // @ts-ignore
         ctx.letterSpacing = '0px';
 
-        // Right Content (Old Rank ➔ New Rank)
-        const oldR = row.last || '—';
-        const newR = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim() || '—';
+        // The Bar Track
+        const trackY = by + h * 0.015;
+        const trackH = h * 0.025;
+        const trackW = colW * 0.75; // Leave room for the big rank on the right
+        
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        ctx.beginPath(); ctx.roundRect(bx, trackY, trackW, trackH, trackH / 2); ctx.fill();
 
-        const rOldSz = Math.round(w * 0.022);
-        const rArrSz = Math.round(w * 0.022);
-        const rNewSz = Math.round(w * 0.03);
+        // Old Rank Fill (Grey/Dim)
+        const oldFillW = trackW * oldP;
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.beginPath(); ctx.roundRect(bx, trackY, oldFillW, trackH, trackH / 2); ctx.fill();
 
-        ctx.font = `700 ${rOldSz}px "Orbitron", sans-serif`;
-        const oW = ctx.measureText(oldR).width;
-        ctx.font = `900 ${rArrSz}px "Inter", sans-serif`;
-        const aW = ctx.measureText(' ➔ ').width;
-        ctx.font = `800 ${rNewSz}px "Orbitron", sans-serif`;
-        const nW = ctx.measureText(newR).width;
-
-        const totalRightW = oW + aW + nW;
-        let rightStartX = listX + listW - listW * 0.04 - totalRightW;
-
-        // Old Rank
-        ctx.font = `700 ${rOldSz}px "Orbitron", sans-serif`;
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.fillText(oldR, rightStartX, cy + rOldSz * 0.35);
-        rightStartX += oW;
-
-        // Arrow
-        ctx.font = `900 ${rArrSz}px "Inter", sans-serif`;
-        ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.2)';
+        // New Rank Fill (Red Glowing)
+        const newFillW = trackW * newP;
+        ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.4)';
         if (isImproved) {
-          ctx.shadowColor = accent; ctx.shadowBlur = 8;
+          ctx.shadowColor = accent; ctx.shadowBlur = 15;
         }
-        ctx.fillText(' ➔ ', rightStartX, cy + rArrSz * 0.3);
+        ctx.beginPath(); ctx.roundRect(bx, trackY, newFillW, trackH, trackH / 2); ctx.fill();
         ctx.shadowBlur = 0;
-        rightStartX += aW;
 
-        // New Rank
-        ctx.font = `800 ${rNewSz}px "Orbitron", sans-serif`;
+        // Old Rank Text (Inside or near the track)
+        ctx.font = `700 ${Math.round(w * 0.014)}px "Inter", sans-serif`;
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.textAlign = 'left';
+        ctx.fillText(`WAS ${cleanOld}`, bx + 10, trackY + trackH * 0.75);
+
+        // Huge New Rank Text (Right side of the bar)
+        const rankX = bx + trackW + 15;
+        ctx.textAlign = 'left';
+        ctx.font = `900 ${Math.round(w * 0.035)}px "Orbitron", sans-serif`;
         ctx.fillStyle = isImproved ? '#ffffff' : titleCol;
         if (isImproved) {
-          ctx.shadowColor = 'rgba(0,0,0,0.5)';
-          ctx.shadowBlur = 10;
+          ctx.shadowColor = accent; ctx.shadowBlur = 15;
         }
-        ctx.fillText(newR, rightStartX, cy + rNewSz * 0.35);
+        ctx.fillText(cleanNew, rankX, trackY + trackH * 0.9);
         ctx.shadowBlur = 0;
       });
     }
