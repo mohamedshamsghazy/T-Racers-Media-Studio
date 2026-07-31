@@ -103,7 +103,7 @@ export class AchievementGenerator implements OnInit {
 
   // Studio Features: Multi-Format, Presets, Hero Image, Stamps, and 6 Creative Modes
   canvasFormat = signal<'square' | 'story' | 'landscape' | 'portrait'>('square');
-  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison'>('achievements');
+  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison' | 'journey'>('achievements');
 
   // Hiring Mode Signals
   hiringDepartment = signal('MECHANICAL & AERODYNAMICS');
@@ -212,6 +212,11 @@ export class AchievementGenerator implements OnInit {
   compHighlightImproved = signal(true);
   compSlide = signal<'all' | number>('all');
 
+  // Journey Mode Signals
+  journeyTemplate = signal<'2024-setback' | '2025-comeback' | '2026-history' | '2027-future'>('2024-setback');
+  journeyHeadline = signal('Rejected, Not Defeated');
+  journeySubtext = signal('Every UK visa application was rejected. Our biggest setback became our greatest fuel.');
+  journeyStats = signal<{label: string, value: string}[]>([]);
   // Visual Effects & Overlays Layer Signals
   showCarbonFiber = signal(false);
   showSpeedLines = signal(false);
@@ -1027,138 +1032,142 @@ export class AchievementGenerator implements OnInit {
       this.drawScheduleMode(ctx, w, h);
     } else if (mode === 'comparison') {
       this.drawComparisonMode(ctx, w, h);
-    } else if (this.achievementsLayout() === 'podium') {
-      this.drawAchievementsPodium(ctx, w, h);
-    } else if (this.achievementsLayout() === 'minimal') {
-      this.drawAchievementsMinimal(ctx, w, h);
-    } else if (this.achievementsLayout() === 'announcement') {
-      this.drawAchievementsAnnouncement(ctx, w, h);
+    } else if (mode === 'journey') {
+      this.drawJourneyMode(ctx, w, h);
     } else {
-      // 4. Draw Typography (Event Name, Main Title, Subtitle)
-      ctx.textAlign = 'center';
-      
-      // Event Name
-      ctx.font = `800 ${this.eventNameSize()}px ${this.getFontFamily('body')}`;
-      ctx.fillStyle = this.eventNameColor();
-      const eventX = w / 2 + Number(this.eventNameXOffset());
-      const eventY = 180 + Number(this.eventNameYOffset());
-      ctx.fillText(this.eventName().toUpperCase(), eventX, eventY);
-      const em = ctx.measureText(this.eventName().toUpperCase());
-      this.hitRegions.push({ id: 'eventName', type: 'eventName', x: eventX - em.width/2, y: eventY - this.eventNameSize(), w: em.width, h: this.eventNameSize() + 10 });
-
-      // Main Title
-      ctx.font = `900 ${this.mainTitleSize()}px ${this.getFontFamily('title')}`;
-      const titleX = w / 2 + Number(this.mainTitleXOffset());
-      const titleY = 260 + Number(this.mainTitleYOffset());
-      const fullTitle = (this.mainTitle() || '').toUpperCase();
-      const highlight = (this.mainTitleHighlightWord() || '').toUpperCase().trim();
-
-      if (highlight && fullTitle.includes(highlight)) {
-        const words = fullTitle.split(' ');
-        const totalW = ctx.measureText(fullTitle).width;
-        let curX = titleX - totalW / 2;
-        ctx.textAlign = 'left';
-        for (const word of words) {
-          if (word === highlight || word.includes(highlight)) {
-            ctx.fillStyle = this.subtitleHighlightColor() || '#f59e0b';
-            ctx.shadowColor = this.subtitleHighlightColor() || '#f59e0b';
-            ctx.shadowBlur = 15;
-          } else {
-            ctx.fillStyle = this.mainTitleColor();
-            ctx.shadowBlur = 0;
-          }
-          ctx.fillText(word, curX, titleY);
-          curX += ctx.measureText(word + ' ').width;
-        }
-        ctx.shadowBlur = 0;
-        ctx.textAlign = 'center';
+      if (this.achievementsLayout() === 'podium') {
+        this.drawAchievementsPodium(ctx, w, h);
+      } else if (this.achievementsLayout() === 'minimal') {
+        this.drawAchievementsMinimal(ctx, w, h);
+      } else if (this.achievementsLayout() === 'announcement') {
+        this.drawAchievementsAnnouncement(ctx, w, h);
       } else {
-        ctx.fillStyle = this.mainTitleColor();
-        ctx.fillText(fullTitle, titleX, titleY);
-      }
-      const tm = ctx.measureText(fullTitle);
-      this.hitRegions.push({ id: 'mainTitle', type: 'mainTitle', x: titleX - tm.width/2, y: titleY - this.mainTitleSize(), w: tm.width, h: this.mainTitleSize() + 10 });
+        // 4. Draw Typography (Event Name, Main Title, Subtitle)
+        ctx.textAlign = 'center';
+            
+            // Event Name
+            ctx.font = `800 ${this.eventNameSize()}px ${this.getFontFamily('body')}`;
+            ctx.fillStyle = this.eventNameColor();
+            const eventX = w / 2 + Number(this.eventNameXOffset());
+            const eventY = 180 + Number(this.eventNameYOffset());
+            ctx.fillText(this.eventName().toUpperCase(), eventX, eventY);
+            const em = ctx.measureText(this.eventName().toUpperCase());
+            this.hitRegions.push({ id: 'eventName', type: 'eventName', x: eventX - em.width/2, y: eventY - this.eventNameSize(), w: em.width, h: this.eventNameSize() + 10 });
 
-      // Subtitle
-      ctx.font = `600 ${this.subtitleSize()}px ${this.getFontFamily('body')}`;
-      ctx.fillStyle = this.subtitleColor();
-      const subX = w / 2 + Number(this.subtitleXOffset());
-      const subY = 330 + Number(this.subtitleYOffset());
-      const subLines = this.subtitle().split('\n');
-      subLines.forEach((sLine, idx) => {
-        ctx.fillText(sLine.toUpperCase(), subX, subY + (idx * (this.subtitleSize() + 8)));
-      });
-      const sm = ctx.measureText(subLines[0] || '');
-      this.hitRegions.push({ id: 'subtitle', type: 'subtitle', x: subX - sm.width/2, y: subY - this.subtitleSize(), w: sm.width, h: (subLines.length * (this.subtitleSize() + 8)) + 10 });
+            // Main Title
+            ctx.font = `900 ${this.mainTitleSize()}px ${this.getFontFamily('title')}`;
+            const titleX = w / 2 + Number(this.mainTitleXOffset());
+            const titleY = 260 + Number(this.mainTitleYOffset());
+            const fullTitle = (this.mainTitle() || '').toUpperCase();
+            const highlight = (this.mainTitleHighlightWord() || '').toUpperCase().trim();
 
-      // 5. Draw Cards
-      const cardsList = this.cards();
-      const totalCards = cardsList.length;
-      if (totalCards > 0) {
-        const spacing = Number(this.cardsGlobalSpacing());
-        const totalSpacing = spacing * (totalCards - 1);
-        const availableW = Math.min(w * 0.9, 1400);
-        const cardW = (availableW - totalSpacing) / totalCards;
-        const cardH = Number(this.cardsGlobalHeight());
-        const startX = (w - availableW) / 2;
-        const baseCy = (h * 0.55) + Number(this.cardsGlobalYOffset());
+            if (highlight && fullTitle.includes(highlight)) {
+              const words = fullTitle.split(' ');
+              const totalW = ctx.measureText(fullTitle).width;
+              let curX = titleX - totalW / 2;
+              ctx.textAlign = 'left';
+              for (const word of words) {
+                if (word === highlight || word.includes(highlight)) {
+                  ctx.fillStyle = this.subtitleHighlightColor() || '#f59e0b';
+                  ctx.shadowColor = this.subtitleHighlightColor() || '#f59e0b';
+                  ctx.shadowBlur = 15;
+                } else {
+                  ctx.fillStyle = this.mainTitleColor();
+                  ctx.shadowBlur = 0;
+                }
+                ctx.fillText(word, curX, titleY);
+                curX += ctx.measureText(word + ' ').width;
+              }
+              ctx.shadowBlur = 0;
+              ctx.textAlign = 'center';
+            } else {
+              ctx.fillStyle = this.mainTitleColor();
+              ctx.fillText(fullTitle, titleX, titleY);
+            }
+            const tm = ctx.measureText(fullTitle);
+            this.hitRegions.push({ id: 'mainTitle', type: 'mainTitle', x: titleX - tm.width/2, y: titleY - this.mainTitleSize(), w: tm.width, h: this.mainTitleSize() + 10 });
 
-        cardsList.forEach((card, idx) => {
-          const cx = startX + idx * (cardW + spacing) + (Number(card.offsetX) || 0);
-          const cy = baseCy + (Number(card.offsetY) || 0);
+            // Subtitle
+            ctx.font = `600 ${this.subtitleSize()}px ${this.getFontFamily('body')}`;
+            ctx.fillStyle = this.subtitleColor();
+            const subX = w / 2 + Number(this.subtitleXOffset());
+            const subY = 330 + Number(this.subtitleYOffset());
+            const subLines = this.subtitle().split('\n');
+            subLines.forEach((sLine, idx) => {
+              ctx.fillText(sLine.toUpperCase(), subX, subY + (idx * (this.subtitleSize() + 8)));
+            });
+            const sm = ctx.measureText(subLines[0] || '');
+            this.hitRegions.push({ id: 'subtitle', type: 'subtitle', x: subX - sm.width/2, y: subY - this.subtitleSize(), w: sm.width, h: (subLines.length * (this.subtitleSize() + 8)) + 10 });
 
-          this.drawSciFiCardFrame(ctx, cx, cy, cardW, cardH, Number(this.cardsGlobalRadius()) || 15, card.theme || '#ffffff');
+            // 5. Draw Cards
+            const cardsList = this.cards();
+            const totalCards = cardsList.length;
+            if (totalCards > 0) {
+              const spacing = Number(this.cardsGlobalSpacing());
+              const totalSpacing = spacing * (totalCards - 1);
+              const availableW = Math.min(w * 0.9, 1400);
+              const cardW = (availableW - totalSpacing) / totalCards;
+              const cardH = Number(this.cardsGlobalHeight());
+              const startX = (w - availableW) / 2;
+              const baseCy = (h * 0.55) + Number(this.cardsGlobalYOffset());
 
-          this.hitRegions.push({ id: card.id, type: 'card', x: cx, y: cy, w: cardW, h: cardH });
+              cardsList.forEach((card, idx) => {
+                const cx = startX + idx * (cardW + spacing) + (Number(card.offsetX) || 0);
+                const cy = baseCy + (Number(card.offsetY) || 0);
 
-          ctx.textAlign = 'center';
-          ctx.font = `900 44px ${this.getFontFamily('title')}`;
-          ctx.fillStyle = card.rankColor || card.theme || '#ffffff';
-          ctx.fillText(card.rank, cx + cardW/2, cy + 60);
+                this.drawSciFiCardFrame(ctx, cx, cy, cardW, cardH, Number(this.cardsGlobalRadius()) || 15, card.theme || '#ffffff');
 
-          ctx.font = `600 15px ${this.getFontFamily('body')}`;
-          ctx.fillStyle = card.titleColor || '#ffffff';
-          const tLines = (card.title || '').split('\n');
-          tLines.forEach((tLine, i) => {
-            ctx.fillText(tLine.toUpperCase(), cx + cardW/2, cy + 95 + (i * 20));
-          });
-        });
-      }
+                this.hitRegions.push({ id: card.id, type: 'card', x: cx, y: cy, w: cardW, h: cardH });
 
-      // 6. Overall Result
-      if (this.overallRank()) {
-        const baseOvY = h * 0.84;
-        const defaultOvW = w * 0.8;
-        const ovW = Number(this.overallWidth()) || defaultOvW;
-        const ovH = Number(this.overallHeight());
-        const ovX = (w - ovW) / 2 + Number(this.overallOffsetX());
-        const ovY = baseOvY + Number(this.overallOffsetY());
-        const themeColor = this.overallTheme() || '#ffffff';
-        
-        this.drawSciFiCardFrame(ctx, ovX, ovY, ovW, ovH, Number(this.overallRadius()) || 15, themeColor);
-        
-        this.hitRegions.push({ id: 'overall', type: 'overall', x: ovX, y: ovY, w: ovW, h: ovH });
+                ctx.textAlign = 'center';
+                ctx.font = `900 44px ${this.getFontFamily('title')}`;
+                ctx.fillStyle = card.rankColor || card.theme || '#ffffff';
+                ctx.fillText(card.rank, cx + cardW/2, cy + 60);
 
-        ctx.fillStyle = this.overallRankColor() || themeColor;
-        ctx.font = `900 65px ${this.getFontFamily('title')}`;
-        ctx.fillText(this.overallRank(), ovX + ovW/2, ovY + 70);
-        
-        const lineLen = ovW * 0.2;
-        ctx.beginPath();
-        ctx.moveTo(ovX + 40, ovY + 80);
-        ctx.lineTo(ovX + lineLen + 40, ovY + 80);
-        ctx.moveTo(ovX + ovW - 40, ovY + 80);
-        ctx.lineTo(ovX + ovW - lineLen - 40, ovY + 80);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#333';
-        ctx.stroke();
+                ctx.font = `600 15px ${this.getFontFamily('body')}`;
+                ctx.fillStyle = card.titleColor || '#ffffff';
+                const tLines = (card.title || '').split('\n');
+                tLines.forEach((tLine, i) => {
+                  ctx.fillText(tLine.toUpperCase(), cx + cardW/2, cy + 95 + (i * 20));
+                });
+              });
+            }
 
-        if (this.overallSubtitle()) {
-          ctx.fillStyle = this.overallSubtitleColor();
-          ctx.font = '600 20px "Inter", sans-serif';
-          ctx.fillText(this.overallSubtitle().toUpperCase(), ovX + ovW/2, ovY + 110);
-        }
-      }
+            // 6. Overall Result
+            if (this.overallRank()) {
+              const baseOvY = h * 0.84;
+              const defaultOvW = w * 0.8;
+              const ovW = Number(this.overallWidth()) || defaultOvW;
+              const ovH = Number(this.overallHeight());
+              const ovX = (w - ovW) / 2 + Number(this.overallOffsetX());
+              const ovY = baseOvY + Number(this.overallOffsetY());
+              const themeColor = this.overallTheme() || '#ffffff';
+              
+              this.drawSciFiCardFrame(ctx, ovX, ovY, ovW, ovH, Number(this.overallRadius()) || 15, themeColor);
+              
+              this.hitRegions.push({ id: 'overall', type: 'overall', x: ovX, y: ovY, w: ovW, h: ovH });
+
+              ctx.fillStyle = this.overallRankColor() || themeColor;
+              ctx.font = `900 65px ${this.getFontFamily('title')}`;
+              ctx.fillText(this.overallRank(), ovX + ovW/2, ovY + 70);
+              
+              const lineLen = ovW * 0.2;
+              ctx.beginPath();
+              ctx.moveTo(ovX + 40, ovY + 80);
+              ctx.lineTo(ovX + lineLen + 40, ovY + 80);
+              ctx.moveTo(ovX + ovW - 40, ovY + 80);
+              ctx.lineTo(ovX + ovW - lineLen - 40, ovY + 80);
+              ctx.lineWidth = 2;
+              ctx.strokeStyle = '#333';
+              ctx.stroke();
+
+              if (this.overallSubtitle()) {
+                ctx.fillStyle = this.overallSubtitleColor();
+                ctx.font = '600 20px "Inter", sans-serif';
+                ctx.fillText(this.overallSubtitle().toUpperCase(), ovX + ovW/2, ovY + 110);
+              }
+            }
+          }
     }
 
     // 6.5 Draw Stamps & Badges Layer
@@ -2821,6 +2830,234 @@ export class AchievementGenerator implements OnInit {
     this.drawCanvas();
   }
 
+  // ------------------------------------
+  // Journey Series Mutators & Renderer
+  // ------------------------------------
+  
+  updateJourneyStat(idx: number, field: 'label' | 'value', value: string) {
+    const arr = [...this.journeyStats()];
+    if (arr[idx]) {
+      arr[idx][field] = value;
+      this.journeyStats.set(arr);
+      this.drawCanvas();
+    }
+  }
+
+  wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
+    const words = text.split(' ');
+    let line = '';
+    let currentY = y;
+    for(let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      if (testWidth > maxWidth && n > 0) {
+        ctx.fillText(line.trim(), x, currentY);
+        line = words[n] + ' ';
+        currentY += lineHeight;
+      }
+      else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line.trim(), x, currentY);
+  }
+
+  drawJourneyMode(ctx: CanvasRenderingContext2D, w: number, h: number) {
+    ctx.save();
+    const tpl = this.journeyTemplate();
+    const hl = this.journeyHeadline();
+    const sub = this.journeySubtext();
+    const stats = this.journeyStats();
+    
+    // Draw base dark overlay
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0,0,w,h);
+
+    if (tpl === '2024-setback') {
+      // Very dark, emotional, dramatic red vignette
+      const grd = ctx.createRadialGradient(w/2, h/2, w*0.2, w/2, h/2, w);
+      grd.addColorStop(0, 'transparent');
+      grd.addColorStop(1, 'rgba(208,0,7,0.85)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0,0,w,h);
+
+      ctx.textAlign = 'center';
+      
+      // Year / Eyebrow
+      ctx.font = `600 ${Math.round(w * 0.03)}px "Inter", sans-serif`;
+      ctx.fillStyle = '#ff4444';
+      // @ts-ignore
+      ctx.letterSpacing = '8px'; 
+      ctx.fillText('2024', w/2, h * 0.4);
+      // @ts-ignore
+      ctx.letterSpacing = '0px'; 
+
+      // Headline
+      ctx.font = `900 ${Math.round(w * 0.08)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#d00007'; ctx.shadowBlur = 40;
+      this.wrapText(ctx, hl.toUpperCase(), w/2, h * 0.5, w * 0.8, w * 0.09);
+      ctx.shadowBlur = 0;
+
+      // Subtext
+      ctx.font = `400 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      this.wrapText(ctx, sub, w/2, h * 0.7, w * 0.7, w * 0.035);
+
+    } else if (tpl === '2025-comeback') {
+      // Bright, energetic, achievement focused
+      const grad = ctx.createLinearGradient(0,h, w,0);
+      grad.addColorStop(0, 'rgba(0,0,0,0.9)');
+      grad.addColorStop(1, 'rgba(15,23,42,0.6)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,w,h);
+
+      ctx.textAlign = 'left';
+      ctx.font = `800 ${Math.round(w * 0.03)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillText('2025 // THE COMEBACK', w * 0.1, h * 0.2);
+
+      ctx.font = `900 ${Math.round(w * 0.06)}px "Inter", sans-serif`;
+      ctx.fillStyle = '#ffffff';
+      this.wrapText(ctx, hl.toUpperCase(), w * 0.1, h * 0.3, w * 0.8, w * 0.07);
+
+      ctx.font = `400 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      this.wrapText(ctx, sub, w * 0.1, h * 0.45, w * 0.8, w * 0.035);
+
+      // Stats grid
+      if (stats.length > 0) {
+        let sy = h * 0.65;
+        let sx = w * 0.1;
+        const boxW = (w * 0.8 - w * 0.04) / 2;
+        const boxH = h * 0.15;
+        stats.forEach((s, i) => {
+          const col = i % 2;
+          const row = Math.floor(i / 2);
+          const bx = sx + col * (boxW + w * 0.04);
+          const by = sy + row * (boxH + h * 0.04);
+
+          ctx.fillStyle = 'rgba(255,255,255,0.05)';
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.roundRect(bx, by, boxW, boxH, 12); ctx.fill(); ctx.stroke();
+
+          ctx.textAlign = 'left';
+          ctx.font = `600 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
+          ctx.fillStyle = '#00f0ff';
+          ctx.fillText(s.label.toUpperCase(), bx + w * 0.03, by + h * 0.05);
+
+          ctx.font = `900 ${Math.round(w * 0.04)}px "Orbitron", sans-serif`;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(s.value, bx + w * 0.03, by + h * 0.11);
+        });
+      }
+
+    } else if (tpl === '2026-history') {
+      // Championship look
+      const grad = ctx.createLinearGradient(w/2, 0, w/2, h);
+      grad.addColorStop(0, 'rgba(208,0,7,0.3)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.9)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,w,h);
+
+      ctx.textAlign = 'center';
+      ctx.font = `800 ${Math.round(w * 0.04)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = '#ffd700'; // Gold
+      ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 20;
+      // @ts-ignore
+      ctx.letterSpacing = '10px'; 
+      ctx.fillText('2026 // HISTORY MADE', w/2, h * 0.2);
+      // @ts-ignore
+      ctx.letterSpacing = '0px'; 
+      ctx.shadowBlur = 0;
+
+      ctx.font = `900 ${Math.round(w * 0.07)}px "Inter", sans-serif`;
+      ctx.fillStyle = '#ffffff';
+      this.wrapText(ctx, hl.toUpperCase(), w/2, h * 0.32, w * 0.9, w * 0.08);
+
+      // Stat grid
+      if (stats.length > 0) {
+        let sy = h * 0.5;
+        const boxW = (w * 0.85 - w * 0.06) / 3;
+        const boxH = h * 0.15;
+        const sx = (w - (boxW * 3 + w * 0.06)) / 2;
+        stats.forEach((s, i) => {
+          const col = i % 3;
+          const row = Math.floor(i / 3);
+          const bx = sx + col * (boxW + w * 0.03);
+          const by = sy + row * (boxH + h * 0.04);
+
+          ctx.fillStyle = 'rgba(208,0,7,0.1)';
+          ctx.strokeStyle = 'rgba(208,0,7,0.5)';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.roundRect(bx, by, boxW, boxH, 8); ctx.fill(); ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.font = `700 ${Math.round(w * 0.015)}px "Inter", sans-serif`;
+          ctx.fillStyle = '#ffaaaa';
+          ctx.fillText(s.label.toUpperCase(), bx + boxW/2, by + h * 0.05);
+
+          ctx.font = `900 ${Math.round(w * 0.045)}px "Orbitron", sans-serif`;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(s.value, bx + boxW/2, by + h * 0.11);
+        });
+      }
+
+    } else if (tpl === '2027-future') {
+      // Futuristic cyber look
+      const grad = ctx.createLinearGradient(0,0, w,h);
+      grad.addColorStop(0, 'rgba(0,0,0,0.9)');
+      grad.addColorStop(1, 'rgba(0,240,255,0.2)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,w,h);
+
+      // Tech brackets
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 4;
+      const bM = w * 0.08;
+      ctx.beginPath();
+      ctx.moveTo(bM + 50, bM); ctx.lineTo(bM, bM); ctx.lineTo(bM, bM + 50); // TL
+      ctx.moveTo(w - bM - 50, bM); ctx.lineTo(w - bM, bM); ctx.lineTo(w - bM, bM + 50); // TR
+      ctx.moveTo(bM + 50, h - bM); ctx.lineTo(bM, h - bM); ctx.lineTo(bM, h - bM - 50); // BL
+      ctx.moveTo(w - bM - 50, h - bM); ctx.lineTo(w - bM, h - bM); ctx.lineTo(w - bM, h - bM - 50); // BR
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.font = `900 ${Math.round(w * 0.12)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillText('2027', w/2, h * 0.45);
+
+      ctx.font = `900 ${Math.round(w * 0.07)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 15;
+      this.wrapText(ctx, hl.toUpperCase(), w/2, h * 0.45, w * 0.8, w * 0.08);
+      ctx.shadowBlur = 0;
+
+      ctx.font = `500 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
+      ctx.fillStyle = '#00f0ff';
+      // @ts-ignore
+      ctx.letterSpacing = '4px'; 
+      this.wrapText(ctx, sub.toUpperCase(), w/2, h * 0.65, w * 0.7, w * 0.04);
+      // @ts-ignore
+      ctx.letterSpacing = '0px'; 
+    }
+
+    const footY = h * 0.96;
+    ctx.textAlign = 'center';
+    ctx.font = `600 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    // @ts-ignore
+    ctx.letterSpacing = '8px';
+    ctx.fillText('WWW.TRACERSMEC.COM', w / 2, footY);
+    // @ts-ignore
+    ctx.letterSpacing = '0px';
+
+    ctx.restore();
+  }
   drawComparisonMode(ctx: CanvasRenderingContext2D, w: number, h: number) {
     ctx.save();
 
