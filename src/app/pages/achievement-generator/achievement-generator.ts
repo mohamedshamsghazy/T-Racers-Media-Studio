@@ -220,7 +220,7 @@ export class AchievementGenerator implements OnInit {
   watermarkText = signal('T-RACERS');
 
   // Multi-Style Sub-Layouts Signals
-  achievementsLayout = signal<'classic' | 'podium' | 'minimal'>('classic');
+  achievementsLayout = signal<'classic' | 'podium' | 'minimal' | 'announcement'>('classic');
   hiringLayout = signal<'grid' | 'spotlight'>('grid');
   revealLayout = signal<'teaser' | 'classified'>('teaser');
 
@@ -1030,6 +1030,8 @@ export class AchievementGenerator implements OnInit {
       this.drawAchievementsPodium(ctx, w, h);
     } else if (this.achievementsLayout() === 'minimal') {
       this.drawAchievementsMinimal(ctx, w, h);
+    } else if (this.achievementsLayout() === 'announcement') {
+      this.drawAchievementsAnnouncement(ctx, w, h);
     } else {
       // 4. Draw Typography (Event Name, Main Title, Subtitle)
       ctx.textAlign = 'center';
@@ -3115,6 +3117,202 @@ export class AchievementGenerator implements OnInit {
     ctx.fillText('WWW.TRACERSMEC.COM  //  FORMULA STUDENT', w / 2, footY);
     // @ts-ignore
     ctx.letterSpacing = '0px';
+
+    ctx.restore();
+  }
+
+  drawAchievementsAnnouncement(ctx: CanvasRenderingContext2D, w: number, h: number) {
+    ctx.save();
+
+    const accent = this.universalAccentColor();
+    const border = this.universalBorderColor();
+    const titleCol = this.universalTitleColor();
+    const subCol = this.universalSubColor();
+    const bodyCol = this.universalBodyColor();
+
+    // ─── 1. DARK GRADIENT OVERLAY (always, even over photo) ───
+    const overlay = ctx.createLinearGradient(0, 0, 0, h);
+    overlay.addColorStop(0, 'rgba(0,0,0,0.35)');
+    overlay.addColorStop(0.4, 'rgba(0,0,0,0.15)');
+    overlay.addColorStop(0.68, 'rgba(0,0,0,0.6)');
+    overlay.addColorStop(1, 'rgba(0,0,0,0.92)');
+    ctx.fillStyle = overlay;
+    ctx.fillRect(0, 0, w, h);
+
+    // ─── 2. CHECKERED SIDE ACCENTS ───
+    const checkerSize = Math.round(w * 0.038);
+    const checkerCols = 3;
+    const checkerRows = Math.ceil(h / checkerSize);
+
+    const drawCheckers = (startX: number) => {
+      for (let row = 0; row < checkerRows; row++) {
+        for (let col = 0; col < checkerCols; col++) {
+          const isEven = (row + col) % 2 === 0;
+          ctx.fillStyle = isEven ? `${accent}cc` : `${accent}22`;
+          ctx.fillRect(startX + col * checkerSize, row * checkerSize, checkerSize, checkerSize);
+        }
+      }
+    };
+
+    // Left checkers
+    ctx.save();
+    ctx.globalAlpha = 0.7;
+    drawCheckers(0);
+    // Right checkers
+    drawCheckers(w - checkerCols * checkerSize);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    // ─── 3. SUBTITLE / TAG LINE ───
+    const tagY = h * 0.20;
+    const tagText = (this.eventName() || 'OUR PROUD ACHIEVEMENTS').toUpperCase();
+    const tagFontSz = Math.round(w * 0.026);
+    ctx.textAlign = 'center';
+    ctx.font = `700 ${tagFontSz}px "Inter", sans-serif`;
+    ctx.fillStyle = `${titleCol}cc`;
+    // @ts-ignore
+    ctx.letterSpacing = '6px';
+    ctx.fillText(tagText, w / 2, tagY);
+    // @ts-ignore
+    ctx.letterSpacing = '0px';
+
+    // ─── 4. GIANT RANK NUMBER (HERO ELEMENT) ───
+    const rankText = (this.mainTitle() || '3RD').toUpperCase();
+    const rankSz = Math.round(w * 0.28);
+    ctx.font = `900 ${rankSz}px "Orbitron", "Inter", sans-serif`;
+    ctx.textAlign = 'center';
+
+    // Text shadow layers for depth
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = 60;
+    ctx.fillStyle = accent;
+    ctx.fillText(rankText, w / 2 + 5, h * 0.44 + 5);
+
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 20;
+    ctx.fillStyle = titleCol;
+    ctx.fillText(rankText, w / 2, h * 0.44);
+    ctx.shadowBlur = 0;
+
+    // ─── 5. "OVERALL" LABEL BELOW RANK ───
+    const overallText = (this.mainTitleHighlightWord() || 'OVERALL').toUpperCase();
+    const overallSz = Math.round(w * 0.085);
+    ctx.font = `900 ${overallSz}px "Orbitron", "Inter", sans-serif`;
+    ctx.fillStyle = titleCol;
+    ctx.shadowColor = `${accent}88`;
+    ctx.shadowBlur = 30;
+    ctx.fillText(overallText, w / 2, h * 0.44 + overallSz * 1.1);
+    ctx.shadowBlur = 0;
+
+    // ─── 6. HORIZONTAL DIVIDER ───
+    const divY = h * 0.44 + overallSz * 1.6;
+    const divW = w * 0.5;
+    const divX = (w - divW) / 2;
+    const divGrad = ctx.createLinearGradient(divX, 0, divX + divW, 0);
+    divGrad.addColorStop(0, 'transparent');
+    divGrad.addColorStop(0.5, `${border}cc`);
+    divGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = divGrad;
+    ctx.fillRect(divX, divY, divW, 2);
+
+    // ─── 7. EVENT RESULT BADGES (CIRCLES AT BOTTOM) ───
+    const cards = this.cards();
+    const validCards = cards.filter(c => c.rank && c.title);
+    const badgeCount = Math.min(validCards.length, 6);
+
+    if (badgeCount > 0) {
+      const badgeZoneTop = divY + h * 0.045;
+      const badgeZoneH = h * 0.93 - badgeZoneTop;
+      const badgeDiam = Math.min(Math.round(w * 0.135), Math.round(badgeZoneH * 0.55));
+      const badgeGap = (w * 0.88 - badgeDiam * badgeCount) / Math.max(badgeCount - 1, 1);
+      const badgeStartX = w * 0.06 + badgeDiam / 2;
+
+      validCards.slice(0, badgeCount).forEach((card, i) => {
+        const bx = badgeStartX + i * (badgeDiam + badgeGap);
+        const by = badgeZoneTop + badgeDiam / 2;
+
+        // Outer glow ring
+        ctx.beginPath();
+        ctx.arc(bx, by, badgeDiam / 2 + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = `${accent}88`;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Badge circle fill
+        const badgeBg = ctx.createRadialGradient(bx - badgeDiam * 0.12, by - badgeDiam * 0.12, 0, bx, by, badgeDiam / 2);
+        badgeBg.addColorStop(0, `${accent}ee`);
+        badgeBg.addColorStop(1, `${accent}99`);
+        ctx.fillStyle = badgeBg;
+        ctx.beginPath();
+        ctx.arc(bx, by, badgeDiam / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Badge border
+        ctx.strokeStyle = titleCol;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(bx, by, badgeDiam / 2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Rank text inside badge
+        const rankFontSz = Math.round(badgeDiam * 0.4);
+        ctx.textAlign = 'center';
+        ctx.font = `900 ${rankFontSz}px "Orbitron", "Inter", sans-serif`;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#000000';
+        ctx.shadowBlur = 8;
+        ctx.fillText((card.rank || '').toUpperCase(), bx, by + rankFontSz * 0.36);
+        ctx.shadowBlur = 0;
+
+        // Event label below badge
+        const evFontSz = Math.round(w * 0.018);
+        const evText = (card.title || '').toUpperCase();
+        ctx.font = `700 ${evFontSz}px "Inter", sans-serif`;
+        ctx.fillStyle = `${titleCol}dd`;
+        // @ts-ignore
+        ctx.letterSpacing = '1px';
+
+        // Word wrap event label (2 lines max)
+        const words = evText.split(' ');
+        const maxW = badgeDiam + badgeGap * 0.6;
+        const lines: string[] = [];
+        let curLine = '';
+        for (const word of words) {
+          const test = curLine ? curLine + ' ' + word : word;
+          if (ctx.measureText(test).width > maxW && curLine) {
+            lines.push(curLine);
+            curLine = word;
+          } else {
+            curLine = test;
+          }
+        }
+        if (curLine) lines.push(curLine);
+
+        const lineH = evFontSz * 1.3;
+        const textBlockTop = by + badgeDiam / 2 + evFontSz * 0.8;
+        lines.slice(0, 2).forEach((ln, li) => {
+          ctx.fillText(ln, bx, textBlockTop + li * lineH);
+        });
+        // @ts-ignore
+        ctx.letterSpacing = '0px';
+      });
+    }
+
+    // ─── 8. OPTIONAL SUBTITLE (event label e.g. "IN CONCEPT CLASS") ───
+    if (this.eventName()) {
+      const footTextY = h * 0.965;
+      ctx.textAlign = 'center';
+      ctx.font = `700 ${Math.round(w * 0.022)}px "Inter", sans-serif`;
+      ctx.fillStyle = `${bodyCol}88`;
+      // @ts-ignore
+      ctx.letterSpacing = '5px';
+      ctx.fillText(this.subtitle()?.toUpperCase() || '', w / 2, footTextY);
+      // @ts-ignore
+      ctx.letterSpacing = '0px';
+    }
 
     ctx.restore();
   }
