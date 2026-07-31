@@ -1373,6 +1373,24 @@
             <div *ngIf="studioMode() === 'comparison'" class="pt-4 border-t border-slate-800 space-y-4">
               <label class="block text-sm font-medium text-green-400">📊 Season vs Season Comparison</label>
 
+              <!-- Carousel Slide Layout Selector -->
+              <div class="space-y-1.5">
+                <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider">📐 Layout Mode</label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button type="button" (click)="compSlide.set('all'); drawCanvas()" [class]="compSlide() === 'all' ? 'bg-green-600 text-white font-bold shadow-md shadow-green-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">📋 All-in-One Grid</button>
+                  <button type="button" (click)="compSlide.set(compRows().length - 1); drawCanvas()" [class]="compSlide() !== 'all' ? 'bg-green-600 text-white font-bold shadow-md shadow-green-600/30' : 'bg-slate-800 text-gray-400 hover:text-white'" class="py-1.5 px-2 rounded text-[11px] transition-all">📸 Carousel Mode</button>
+                </div>
+              </div>
+
+              <!-- Carousel Slide Picker -->
+              <div *ngIf="compSlide() !== 'all'" class="p-3 bg-slate-900 rounded border border-green-900/50 space-y-2">
+                <label class="block text-xs font-semibold text-green-400 mb-1">Select Event to Highlight (Slide Focus)</label>
+                <select [value]="compSlide()" (change)="compSlide.set(+$any($event.target).value); drawCanvas()" class="w-full bg-slate-800 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-bold focus:outline-none focus:border-green-500">
+                  <option *ngFor="let row of compRows(); let idx = index" [value]="idx">Highlight: {{row.event}}</option>
+                </select>
+                <p class="text-[10px] text-gray-400 mt-1">Export each highlight separately to create a multi-image Instagram Carousel.</p>
+              </div>
+
               <div class="space-y-3 p-3 bg-slate-900 rounded border border-green-900/50">
                 <div>
                   <label class="block text-xs font-semibold text-gray-400 mb-1">Post Title</label>

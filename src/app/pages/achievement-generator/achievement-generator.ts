@@ -210,6 +210,7 @@ export class AchievementGenerator implements OnInit {
   compBoxOffsetX = signal(0);
   compBoxOffsetY = signal(0);
   compHighlightImproved = signal(true);
+  compSlide = signal<'all' | number>('all');
 
   // Visual Effects & Overlays Layer Signals
   showCarbonFiber = signal(false);
@@ -2876,146 +2877,233 @@ export class AchievementGenerator implements OnInit {
       heroRow = allRows[allRows.length - 1];
       badgeRows = allRows.slice(0, allRows.length - 1);
     }
+    
+    const slide = this.compSlide();
 
-    // ─── 3. HERO (OVERALL RANK) ───
-    let listStartY = h * 0.22;
-
-    if (heroRow) {
-      const heroY = h * 0.28;
-      const heroW = w * 0.6;
-      const heroH = h * 0.18;
+    // ─── CAROUSEL SLIDE MODE (SINGLE EVENT HERO) ───
+    if (slide !== 'all' && allRows[slide]) {
+      const row = allRows[slide];
+      const heroY = h * 0.35;
+      const heroW = w * 0.8;
+      const heroH = h * 0.25;
       const heroX = (w - heroW) / 2;
-      const isImproved = heroRow.improved && this.compHighlightImproved();
+      const isImproved = row.improved && this.compHighlightImproved();
 
       // Hero Card Background
       ctx.fillStyle = 'rgba(255,255,255,0.03)';
       ctx.strokeStyle = 'rgba(255,255,255,0.1)';
       ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 16); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 24); ctx.fill(); ctx.stroke();
 
       // Inner Accent Glow
       if (isImproved) {
         const glow = ctx.createLinearGradient(heroX, heroY, heroX, heroY + heroH);
-        glow.addColorStop(0, `${accent}33`);
+        glow.addColorStop(0, `${accent}44`);
         glow.addColorStop(1, 'transparent');
         ctx.fillStyle = glow;
-        ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 16); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 24); ctx.fill();
         
         // Top edge red line
         ctx.fillStyle = accent;
-        ctx.shadowColor = accent; ctx.shadowBlur = 15;
-        ctx.beginPath(); ctx.roundRect(heroX, heroY - 1, heroW, 4, [16,16,0,0]); ctx.fill();
+        ctx.shadowColor = accent; ctx.shadowBlur = 20;
+        ctx.beginPath(); ctx.roundRect(heroX, heroY - 2, heroW, 6, [24,24,0,0]); ctx.fill();
         ctx.shadowBlur = 0;
       }
 
-      // "OVERALL RANK" text
+      // EVENT NAME
       ctx.textAlign = 'center';
-      ctx.font = `700 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = `800 ${Math.round(w * 0.03)}px "Inter", sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
       // @ts-ignore
-      ctx.letterSpacing = '6px';
-      ctx.fillText(heroRow.event.toUpperCase(), w / 2, heroY + h * 0.045);
+      ctx.letterSpacing = '8px';
+      ctx.fillText(row.event.toUpperCase(), w / 2, heroY + h * 0.06);
       // @ts-ignore
       ctx.letterSpacing = '0px';
 
       // Ranks Comparison inside Hero
-      const cy = heroY + h * 0.11;
+      const cy = heroY + h * 0.15;
       
-      const oldR = heroRow.last.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      const newR = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      const oldR = row.last || '—';
+      const newR = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim() || '—';
 
       // 2024 Rank
       ctx.textAlign = 'right';
-      ctx.font = `800 ${Math.round(w * 0.06)}px "Orbitron", sans-serif`;
+      ctx.font = `800 ${Math.round(w * 0.07)}px "Orbitron", sans-serif`;
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
-      ctx.fillText(oldR, w / 2 - w * 0.08, cy + w * 0.02);
+      ctx.fillText(oldR, w / 2 - w * 0.1, cy + w * 0.02);
 
       // Arrow
       ctx.textAlign = 'center';
-      ctx.font = `900 ${Math.round(w * 0.04)}px "Inter", sans-serif`;
+      ctx.font = `900 ${Math.round(w * 0.06)}px "Inter", sans-serif`;
       ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.4)';
       ctx.fillText('➔', w / 2, cy + w * 0.015);
 
       // 2025 Rank
       ctx.textAlign = 'left';
-      ctx.font = `900 ${Math.round(w * 0.08)}px "Orbitron", sans-serif`;
+      ctx.font = `900 ${Math.round(w * 0.11)}px "Orbitron", sans-serif`;
       ctx.fillStyle = '#ffffff';
       if (isImproved) {
-        ctx.shadowColor = accent; ctx.shadowBlur = 20;
+        ctx.shadowColor = accent; ctx.shadowBlur = 30;
       }
-      ctx.fillText(newR, w / 2 + w * 0.08, cy + w * 0.028);
+      ctx.fillText(newR, w / 2 + w * 0.1, cy + w * 0.035);
       ctx.shadowBlur = 0;
+      
+      // Subtle underline
+      if (isImproved) {
+        const nW = ctx.measureText(newR).width;
+        const uLineY = cy + w * 0.055;
+        const startX = w / 2 + w * 0.1;
+        const uGrad = ctx.createLinearGradient(startX, 0, startX + nW, 0);
+        uGrad.addColorStop(0, `${accent}00`);
+        uGrad.addColorStop(0.5, accent);
+        uGrad.addColorStop(1, `${accent}00`);
+        ctx.fillStyle = uGrad;
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 15;
+        ctx.fillRect(startX, uLineY, nW, 5);
+        ctx.shadowBlur = 0;
+      }
+    } else {
+      // ─── ALL-IN-ONE GRID MODE ───
+      let listStartY = h * 0.22;
 
-      listStartY = heroY + heroH + h * 0.06;
-    }
+      if (heroRow) {
+        const heroY = h * 0.28;
+        const heroW = w * 0.6;
+        const heroH = h * 0.18;
+        const heroX = (w - heroW) / 2;
+        const isImproved = heroRow.improved && this.compHighlightImproved();
 
-    // ─── 4. EVENTS GRID (Clear Glass Cards) ───
-    if (badgeRows.length > 0) {
-      const cols = 2;
-      const gapX = w * 0.04;
-      const gapY = h * 0.03;
-      const cardW = (w * 0.85 - gapX) / 2;
-      const cardH = h * 0.11;
-      const startX = (w - (cardW * 2 + gapX)) / 2;
+        // Hero Card Background
+        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 16); ctx.fill(); ctx.stroke();
 
-      badgeRows.forEach((row, i) => {
-        const c = i % cols;
-        const r = Math.floor(i / cols);
-        const bx = startX + c * (cardW + gapX);
-        const by = listStartY + r * (cardH + gapY);
-        const isImproved = row.improved && this.compHighlightImproved();
-
-        // Card BG
-        ctx.fillStyle = 'rgba(255,255,255,0.02)';
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.roundRect(bx, by, cardW, cardH, 12); ctx.fill(); ctx.stroke();
-
-        // Left accent bar
+        // Inner Accent Glow
         if (isImproved) {
+          const glow = ctx.createLinearGradient(heroX, heroY, heroX, heroY + heroH);
+          glow.addColorStop(0, `${accent}33`);
+          glow.addColorStop(1, 'transparent');
+          ctx.fillStyle = glow;
+          ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 16); ctx.fill();
+          
+          // Top edge red line
           ctx.fillStyle = accent;
-          ctx.beginPath(); ctx.roundRect(bx - 1, by, 4, cardH, [12,0,0,12]); ctx.fill();
+          ctx.shadowColor = accent; ctx.shadowBlur = 15;
+          ctx.beginPath(); ctx.roundRect(heroX, heroY - 1, heroW, 4, [16,16,0,0]); ctx.fill();
+          ctx.shadowBlur = 0;
         }
 
-        // Event Name
-        ctx.textAlign = 'left';
-        ctx.font = `700 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
-        ctx.fillStyle = '#ffffff';
+        // "OVERALL RANK" text
+        ctx.textAlign = 'center';
+        ctx.font = `700 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
         // @ts-ignore
-        ctx.letterSpacing = '1px';
-        ctx.fillText(row.event.toUpperCase(), bx + w * 0.03, by + h * 0.04);
+        ctx.letterSpacing = '6px';
+        ctx.fillText(heroRow.event.toUpperCase(), w / 2, heroY + h * 0.045);
         // @ts-ignore
         ctx.letterSpacing = '0px';
 
-        const cy = by + h * 0.08;
+        // Ranks Comparison inside Hero
+        const cy = heroY + h * 0.11;
+        
+        const oldR = heroRow.last.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        const newR = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
 
-        // Old Rank
-        const oldR = row.last || '—';
-        ctx.textAlign = 'left';
-        ctx.font = `800 ${Math.round(w * 0.024)}px "Orbitron", sans-serif`;
+        // 2024 Rank
+        ctx.textAlign = 'right';
+        ctx.font = `800 ${Math.round(w * 0.06)}px "Orbitron", sans-serif`;
         ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.fillText(oldR, bx + w * 0.03, cy);
-        const oldW = ctx.measureText(oldR).width;
+        ctx.fillText(oldR, w / 2 - w * 0.08, cy + w * 0.02);
 
         // Arrow
-        const arrowX = bx + w * 0.03 + oldW + w * 0.02;
-        ctx.textAlign = 'left';
-        ctx.font = `900 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
-        ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.2)';
-        ctx.fillText('➔', arrowX, cy - w * 0.003);
-        const arrW = ctx.measureText('➔').width;
+        ctx.textAlign = 'center';
+        ctx.font = `900 ${Math.round(w * 0.04)}px "Inter", sans-serif`;
+        ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.4)';
+        ctx.fillText('➔', w / 2, cy + w * 0.015);
 
-        // New Rank
-        const newR = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim() || '—';
-        const newX = arrowX + arrW + w * 0.02;
-        ctx.font = `900 ${Math.round(w * 0.032)}px "Orbitron", sans-serif`;
-        ctx.fillStyle = isImproved ? '#ffffff' : titleCol;
+        // 2025 Rank
+        ctx.textAlign = 'left';
+        ctx.font = `900 ${Math.round(w * 0.08)}px "Orbitron", sans-serif`;
+        ctx.fillStyle = '#ffffff';
         if (isImproved) {
-          ctx.shadowColor = accent; ctx.shadowBlur = 10;
+          ctx.shadowColor = accent; ctx.shadowBlur = 20;
         }
-        ctx.fillText(newR, newX, cy + w * 0.002);
+        ctx.fillText(newR, w / 2 + w * 0.08, cy + w * 0.028);
         ctx.shadowBlur = 0;
-      });
+
+        listStartY = heroY + heroH + h * 0.06;
+      }
+
+      // ─── 4. EVENTS GRID (Clear Glass Cards) ───
+      if (badgeRows.length > 0) {
+        const cols = 2;
+        const gapX = w * 0.04;
+        const gapY = h * 0.03;
+        const cardW = (w * 0.85 - gapX) / 2;
+        const cardH = h * 0.11;
+        const startX = (w - (cardW * 2 + gapX)) / 2;
+
+        badgeRows.forEach((row, i) => {
+          const c = i % cols;
+          const r = Math.floor(i / cols);
+          const bx = startX + c * (cardW + gapX);
+          const by = listStartY + r * (cardH + gapY);
+          const isImproved = row.improved && this.compHighlightImproved();
+
+          // Card BG
+          ctx.fillStyle = 'rgba(255,255,255,0.02)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.roundRect(bx, by, cardW, cardH, 12); ctx.fill(); ctx.stroke();
+
+          // Left accent bar
+          if (isImproved) {
+            ctx.fillStyle = accent;
+            ctx.beginPath(); ctx.roundRect(bx - 1, by, 4, cardH, [12,0,0,12]); ctx.fill();
+          }
+
+          // Event Name
+          ctx.textAlign = 'left';
+          ctx.font = `700 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
+          ctx.fillStyle = '#ffffff';
+          // @ts-ignore
+          ctx.letterSpacing = '1px';
+          ctx.fillText(row.event.toUpperCase(), bx + w * 0.03, by + h * 0.04);
+          // @ts-ignore
+          ctx.letterSpacing = '0px';
+
+          const cy = by + h * 0.08;
+
+          // Old Rank
+          const oldR = row.last || '—';
+          ctx.textAlign = 'left';
+          ctx.font = `800 ${Math.round(w * 0.024)}px "Orbitron", sans-serif`;
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          ctx.fillText(oldR, bx + w * 0.03, cy);
+          const oldW = ctx.measureText(oldR).width;
+
+          // Arrow
+          const arrowX = bx + w * 0.03 + oldW + w * 0.02;
+          ctx.textAlign = 'left';
+          ctx.font = `900 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
+          ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.2)';
+          ctx.fillText('➔', arrowX, cy - w * 0.003);
+          const arrW = ctx.measureText('➔').width;
+
+          // New Rank
+          const newR = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim() || '—';
+          const newX = arrowX + arrW + w * 0.02;
+          ctx.font = `900 ${Math.round(w * 0.032)}px "Orbitron", sans-serif`;
+          ctx.fillStyle = isImproved ? '#ffffff' : titleCol;
+          if (isImproved) {
+            ctx.shadowColor = accent; ctx.shadowBlur = 10;
+          }
+          ctx.fillText(newR, newX, cy + w * 0.002);
+          ctx.shadowBlur = 0;
+        });
+      }
     }
 
     // ─── 5. FOOTER ───
