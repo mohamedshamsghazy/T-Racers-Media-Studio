@@ -2821,155 +2821,298 @@ export class AchievementGenerator implements OnInit {
   drawComparisonMode(ctx: CanvasRenderingContext2D, w: number, h: number) {
     ctx.save();
 
-    // Background gradient if no image
+    const accent = this.universalAccentColor();
+    const border = this.universalBorderColor();
+    const titleCol = this.universalTitleColor();
+    const subCol = this.universalSubColor();
+    const bodyCol = this.universalBodyColor();
+
+    // ─── 1. BACKGROUND (deep radial gradient) ───
     if (!this.bgImage()) {
-      const grad = ctx.createLinearGradient(0, 0, w, h);
-      grad.addColorStop(0, '#050b14');
-      grad.addColorStop(0.5, '#0a0f1e');
-      grad.addColorStop(1, '#060b16');
-      ctx.fillStyle = grad;
+      const bg = ctx.createRadialGradient(w * 0.5, h * 0.25, 0, w * 0.5, h * 0.5, w * 0.9);
+      bg.addColorStop(0, '#0e1628');
+      bg.addColorStop(0.6, '#070d19');
+      bg.addColorStop(1, '#020509');
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
     }
 
-    const accent = this.universalAccentColor();
-    const borderColor = this.universalBorderColor();
-    const boxBg = this.universalBoxBgColor();
-    const titleColor = this.universalTitleColor();
-    const subColor = this.universalSubColor();
-    const bodyColor = this.universalBodyColor();
+    // ─── 2. DIAGONAL SPLIT WASH (right = accent glow) ───
+    const splitX = w * 0.575;
+    const diagOff = w * 0.055;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(splitX - diagOff, 0);
+    ctx.lineTo(w, 0);
+    ctx.lineTo(w, h);
+    ctx.lineTo(splitX + diagOff, h);
+    ctx.closePath();
+    const wash = ctx.createLinearGradient(splitX, 0, w, 0);
+    wash.addColorStop(0, `${accent}00`);
+    wash.addColorStop(0.25, `${accent}14`);
+    wash.addColorStop(1, `${accent}28`);
+    ctx.fillStyle = wash;
+    ctx.fill();
+    ctx.restore();
 
-    // === HEADER SECTION ===
-    const headerY = h * 0.10;
+    // Diagonal separator line
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(splitX - diagOff, 0);
+    ctx.lineTo(splitX + diagOff, h);
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = 20;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.restore();
 
-    // Event label (small tag above title)
+    // ─── 3. CORNER BRACKETS ───
+    const bSz = w * 0.055;
+    const bW = 2.5;
+    const drawBracket = (bx: number, by: number, sx: number, sy: number) => {
+      ctx.save();
+      ctx.strokeStyle = `${border}66`;
+      ctx.lineWidth = bW;
+      ctx.beginPath();
+      ctx.moveTo(bx, by + sy * bSz);
+      ctx.lineTo(bx, by);
+      ctx.lineTo(bx + sx * bSz, by);
+      ctx.stroke();
+      ctx.restore();
+    };
+    drawBracket(w * 0.038, h * 0.025, 1, 1);
+    drawBracket(w * 0.962, h * 0.025, -1, 1);
+    drawBracket(w * 0.038, h * 0.975, 1, -1);
+    drawBracket(w * 0.962, h * 0.975, -1, -1);
+
+    // ─── 4. TOP ACCENT LINE ───
+    const tlGrad = ctx.createLinearGradient(0, 0, w, 0);
+    tlGrad.addColorStop(0, 'transparent');
+    tlGrad.addColorStop(0.2, accent);
+    tlGrad.addColorStop(0.8, accent);
+    tlGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = tlGrad;
+    ctx.fillRect(0, h * 0.022, w, 2);
+
+    // ─── 5. HEADER ───
+    const hdrTop = h * 0.085;
+
+    // Event label pill
+    const evLabel = (this.compEventLabel() || 'FORMULA STUDENT').toUpperCase();
+    const pillFontSz = Math.round(w * 0.022);
+    ctx.font = `700 ${pillFontSz}px "Inter", sans-serif`;
+    const evW = ctx.measureText(evLabel).width;
+    const pPad = w * 0.028;
+    const pW = evW + pPad * 2;
+    const pH = pillFontSz * 1.8;
+    const pX = (w - pW) / 2;
+    const pY = hdrTop;
+
+    ctx.fillStyle = `${accent}20`;
+    ctx.strokeStyle = `${accent}cc`;
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = `${accent}66`;
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.roundRect(pX, pY, pW, pH, pH / 2);
+    ctx.fill(); ctx.stroke();
+    ctx.shadowBlur = 0;
+
     ctx.textAlign = 'center';
-    ctx.font = `700 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
     ctx.fillStyle = accent;
+    ctx.font = `700 ${pillFontSz}px "Inter", sans-serif`;
+    ctx.fillText(evLabel, w / 2, pY + pH * 0.68);
+
+    // Main title
+    const titleSz = Math.round(w * 0.075);
+    const titleY = pY + pH + titleSz * 1.15;
+    ctx.font = `900 ${titleSz}px "Orbitron", "Inter", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = titleCol;
+    ctx.shadowColor = `${accent}44`;
+    ctx.shadowBlur = 40;
+    ctx.fillText((this.compTitle() || 'SEASON COMPARISON').toUpperCase(), w / 2, titleY);
+    ctx.shadowBlur = 0;
+
+    // Decorative divider
+    const divY = titleY + titleSz * 0.55;
+    const dW = w * 0.65;
+    const dX = (w - dW) / 2;
+    const dGrad = ctx.createLinearGradient(dX, 0, dX + dW, 0);
+    dGrad.addColorStop(0, 'transparent');
+    dGrad.addColorStop(0.2, `${border}66`);
+    dGrad.addColorStop(0.5, accent);
+    dGrad.addColorStop(0.8, `${border}66`);
+    dGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = dGrad;
+    ctx.fillRect(dX, divY, dW, 2.5);
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = 8;
+    ctx.fillRect(dX, divY, dW, 2.5);
+    ctx.shadowBlur = 0;
+
+    // ─── 6. COLUMN HEADERS ───
+    const tableW = w * 0.90;
+    const tableX = (w - tableW) / 2 + Number(this.compBoxOffsetX());
+    const col1W = tableW * 0.42;
+    const col2W = tableW * 0.255;
+    const col3W = tableW * 0.255;
+    const gap = tableW * 0.035;
+    const c2x = tableX + col1W + gap;
+    const c3x = tableX + col1W + col2W + gap * 2;
+
+    const colHdrH = Math.round(h * 0.06);
+    const colHdrY = divY + h * 0.042;
+
+    // Col1 – EVENT
+    ctx.fillStyle = `${border}12`;
+    ctx.strokeStyle = `${border}35`;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(tableX, colHdrY, col1W, colHdrH, 8); ctx.fill(); ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.font = `800 ${Math.round(w * 0.021)}px "Inter", sans-serif`;
+    ctx.fillStyle = `${titleCol}99`;
     // @ts-ignore
-    ctx.letterSpacing = '5px';
-    ctx.fillText((this.compEventLabel() || '').toUpperCase(), w / 2, headerY);
+    ctx.letterSpacing = '3px';
+    ctx.fillText('EVENT', tableX + col1W * 0.055, colHdrY + colHdrH * 0.65);
     // @ts-ignore
     ctx.letterSpacing = '0px';
 
-    // Main Title
-    const titleSize = Math.round(w * 0.065);
-    ctx.font = `900 ${titleSize}px "Orbitron", "Inter", sans-serif`;
-    ctx.fillStyle = titleColor;
-    ctx.shadowColor = `${accent}66`;
-    ctx.shadowBlur = 30;
-    ctx.fillText((this.compTitle() || '').toUpperCase(), w / 2, headerY + titleSize * 1.4);
+    // Col2 – LAST SEASON (dimmed)
+    ctx.fillStyle = `${border}0a`;
+    ctx.strokeStyle = `${border}28`;
+    ctx.beginPath(); ctx.roundRect(c2x, colHdrY, col2W, colHdrH, 8); ctx.fill(); ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.font = `700 ${Math.round(w * 0.020)}px "Inter", sans-serif`;
+    ctx.fillStyle = `${titleCol}66`;
+    ctx.fillText((this.compLastSeason() || 'LAST SEASON').toUpperCase(), c2x + col2W / 2, colHdrY + colHdrH * 0.65);
+
+    // Col3 – THIS SEASON (glowing badge)
+    const c3BgGrad = ctx.createLinearGradient(c3x, colHdrY, c3x + col3W, colHdrY + colHdrH);
+    c3BgGrad.addColorStop(0, `${accent}60`);
+    c3BgGrad.addColorStop(1, `${accent}38`);
+    ctx.fillStyle = c3BgGrad;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = 16;
+    ctx.beginPath(); ctx.roundRect(c3x, colHdrY, col3W, colHdrH, 8); ctx.fill(); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.textAlign = 'center';
+    ctx.font = `900 ${Math.round(w * 0.021)}px "Inter", sans-serif`;
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = '#ffffff';
+    ctx.shadowBlur = 6;
+    ctx.fillText((this.compThisSeason() || 'THIS SEASON').toUpperCase(), c3x + col3W / 2, colHdrY + colHdrH * 0.65);
     ctx.shadowBlur = 0;
 
-    // Decorative divider line
-    const divY = headerY + titleSize * 2.0;
-    const divW = w * 0.6;
-    const divX = (w - divW) / 2;
-    const divGrad = ctx.createLinearGradient(divX, 0, divX + divW, 0);
-    divGrad.addColorStop(0, 'transparent');
-    divGrad.addColorStop(0.3, accent);
-    divGrad.addColorStop(0.7, accent);
-    divGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = divGrad;
-    ctx.fillRect(divX, divY, divW, 3);
-
-    // === COLUMN HEADERS ===
-    const colHeaderY = divY + 55;
-    const tableW = w * 0.88;
-    const tableX = (w - tableW) / 2 + Number(this.compBoxOffsetX());
-    const col1W = tableW * 0.45;
-    const col2W = tableW * 0.255;
-    const col3W = tableW * 0.255;
-    const colGap = tableW * 0.02;
-
-    const drawColumnHeader = (label: string, cx: number, cy: number, cw: number, isAccent = false) => {
-      ctx.fillStyle = isAccent ? `${accent}22` : `${borderColor}18`;
-      ctx.strokeStyle = isAccent ? accent : `${borderColor}55`;
-      ctx.lineWidth = isAccent ? 2 : 1.5;
-      ctx.beginPath();
-      ctx.roundRect(cx, cy - 28, cw, 40, 10);
-      ctx.fill(); ctx.stroke();
-
-      ctx.textAlign = 'center';
-      ctx.font = `800 ${Math.round(w * 0.023)}px "Inter", sans-serif`;
-      ctx.fillStyle = isAccent ? accent : subColor;
-      // @ts-ignore
-      ctx.letterSpacing = '2px';
-      ctx.fillText(label.toUpperCase(), cx + cw / 2, cy);
-      // @ts-ignore
-      ctx.letterSpacing = '0px';
-    };
-
-    drawColumnHeader('EVENT', tableX, colHeaderY, col1W);
-    drawColumnHeader(this.compLastSeason() || 'LAST SEASON', tableX + col1W + colGap, colHeaderY, col2W);
-    drawColumnHeader(this.compThisSeason() || 'THIS SEASON', tableX + col1W + col2W + colGap * 2, colHeaderY, col3W, true);
-
-    // === ROWS ===
+    // ─── 7. RESULT ROWS ───
     const rows = this.compRows();
-    const rowH = Math.min(70, (h * 0.52) / Math.max(rows.length, 1));
-    const rowGap = 10;
-    const startY = colHeaderY + 28 + Number(this.compBoxOffsetY());
+    const rowsStartY = colHdrY + colHdrH + h * 0.018 + Number(this.compBoxOffsetY());
+    const availH = h * 0.87 - rowsStartY;
+    const rowH = Math.min(Math.round(h * 0.088), Math.floor((availH - (rows.length - 1) * 9) / Math.max(rows.length, 1)));
+    const rowGap = 9;
 
     rows.forEach((row, i) => {
-      const ry = startY + i * (rowH + rowGap);
+      const ry = rowsStartY + i * (rowH + rowGap);
+      const cy = ry + rowH / 2;
       const isImproved = row.improved && this.compHighlightImproved();
 
       // Row BG
-      ctx.fillStyle = isImproved ? `${accent}12` : `${boxBg}cc`;
-      ctx.strokeStyle = isImproved ? `${accent}55` : `${borderColor}33`;
-      ctx.lineWidth = isImproved ? 1.5 : 1;
-      ctx.beginPath();
-      ctx.roundRect(tableX, ry, tableW, rowH, 12);
-      ctx.fill(); ctx.stroke();
-
-      // If improved: left accent bar
       if (isImproved) {
-        ctx.fillStyle = accent;
-        ctx.beginPath();
-        ctx.roundRect(tableX, ry, 4, rowH, [12, 0, 0, 12]);
-        ctx.fill();
+        const rowBg = ctx.createLinearGradient(tableX, ry, tableX + tableW, ry);
+        rowBg.addColorStop(0, `${accent}0c`);
+        rowBg.addColorStop(0.55, `${accent}16`);
+        rowBg.addColorStop(1, `${accent}24`);
+        ctx.fillStyle = rowBg;
+      } else {
+        ctx.fillStyle = '#ffffff07';
+      }
+      ctx.strokeStyle = isImproved ? `${accent}44` : `${border}1a`;
+      ctx.lineWidth = isImproved ? 1.5 : 1;
+      ctx.beginPath(); ctx.roundRect(tableX, ry, tableW, rowH, 10); ctx.fill(); ctx.stroke();
+
+      // Left accent bar
+      if (isImproved) {
+        const barG = ctx.createLinearGradient(tableX, ry, tableX, ry + rowH);
+        barG.addColorStop(0, '#ffffff55');
+        barG.addColorStop(0.5, accent);
+        barG.addColorStop(1, '#ffffff22');
+        ctx.fillStyle = barG;
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 10;
+        ctx.beginPath(); ctx.roundRect(tableX, ry, 4, rowH, [10, 0, 0, 10]); ctx.fill();
+        ctx.shadowBlur = 0;
       }
 
-      const textY = ry + rowH / 2 + Math.round(w * 0.012);
+      const nameSz = Math.round(w * 0.024);
+      const valSz = Math.round(w * 0.031);
+      const textY = cy + nameSz * 0.38;
 
       // Event name
       ctx.textAlign = 'left';
-      ctx.font = `700 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
-      ctx.fillStyle = bodyColor;
-      ctx.fillText((row.event || '').toUpperCase(), tableX + 22, textY);
+      ctx.font = `700 ${nameSz}px "Inter", sans-serif`;
+      ctx.fillStyle = isImproved ? '#ffffff' : `${bodyCol}cc`;
+      // @ts-ignore
+      ctx.letterSpacing = '1px';
+      ctx.fillText((row.event || '').toUpperCase(), tableX + col1W * 0.055, textY);
+      // @ts-ignore
+      ctx.letterSpacing = '0px';
 
-      // Last season value (dimmed)
+      // Last season (dimmed)
       const lastVal = row.last || '—';
       ctx.textAlign = 'center';
-      ctx.font = `800 ${Math.round(w * 0.028)}px "Orbitron", "Inter", sans-serif`;
-      ctx.fillStyle = lastVal === '—' ? `${bodyColor}55` : `${bodyColor}88`;
-      ctx.fillText(lastVal, tableX + col1W + colGap + col2W / 2, textY);
+      ctx.font = `800 ${valSz}px "Orbitron", "Inter", sans-serif`;
+      ctx.fillStyle = lastVal === '—' ? `${bodyCol}30` : `${bodyCol}66`;
+      ctx.fillText(lastVal, c2x + col2W / 2, textY);
 
-      // This season value (bright)
-      const currVal = row.current || '—';
-      ctx.fillStyle = isImproved ? accent : titleColor;
-      ctx.shadowColor = isImproved ? `${accent}99` : 'transparent';
-      ctx.shadowBlur = isImproved ? 12 : 0;
-      ctx.fillText(currVal, tableX + col1W + col2W + colGap * 2 + col3W / 2, textY);
-      ctx.shadowBlur = 0;
-
-      // Arrow indicator for improved rows
-      if (isImproved && row.last !== '—') {
-        const arrowX = tableX + col1W + colGap + col2W / 2 + col2W * 0.42;
-        ctx.font = `900 ${Math.round(w * 0.022)}px "Inter", sans-serif`;
+      // Arrow
+      if (isImproved && lastVal !== '—') {
+        const arrowMid = c2x + col2W + gap * 0.5;
+        ctx.textAlign = 'center';
+        ctx.font = `900 ${Math.round(w * 0.026)}px "Inter", sans-serif`;
         ctx.fillStyle = accent;
-        ctx.textAlign = 'left';
-        ctx.fillText('→', arrowX, textY);
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 12;
+        ctx.fillText('→', arrowMid, textY);
+        ctx.shadowBlur = 0;
       }
+
+      // This season (glowing big value)
+      const currVal = row.current || '—';
+      const currSz = Math.round(w * 0.035);
+      ctx.textAlign = 'center';
+      ctx.font = `900 ${currSz}px "Orbitron", "Inter", sans-serif`;
+      if (isImproved) {
+        ctx.fillStyle = accent;
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 22;
+      } else {
+        ctx.fillStyle = `${titleCol}bb`;
+        ctx.shadowBlur = 0;
+      }
+      ctx.fillText(currVal, c3x + col3W / 2, cy + currSz * 0.36);
+      ctx.shadowBlur = 0;
     });
 
-    // === FOOTER ===
-    const footerY = h * 0.92;
+    // ─── 8. BOTTOM ACCENT LINE + FOOTER ───
+    const footY = h * 0.955;
+    const blGrad = ctx.createLinearGradient(0, 0, w, 0);
+    blGrad.addColorStop(0, 'transparent');
+    blGrad.addColorStop(0.15, `${border}44`);
+    blGrad.addColorStop(0.85, `${border}44`);
+    blGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = blGrad;
+    ctx.fillRect(0, footY - h * 0.026, w, 1.5);
+
     ctx.textAlign = 'center';
-    ctx.font = `600 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
-    ctx.fillStyle = `${bodyColor}66`;
+    ctx.font = `600 ${Math.round(w * 0.017)}px "Inter", sans-serif`;
+    ctx.fillStyle = `${bodyCol}44`;
     // @ts-ignore
-    ctx.letterSpacing = '3px';
-    ctx.fillText('WWW.TRACERSMEC.COM // FORMULA STUDENT', w / 2, footerY);
+    ctx.letterSpacing = '4px';
+    ctx.fillText('WWW.TRACERSMEC.COM  //  FORMULA STUDENT', w / 2, footY);
     // @ts-ignore
     ctx.letterSpacing = '0px';
 
