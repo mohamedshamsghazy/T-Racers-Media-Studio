@@ -2827,231 +2827,246 @@ export class AchievementGenerator implements OnInit {
     const border = this.universalBorderColor();
     const titleCol = this.universalTitleColor();
     const bodyCol = this.universalBodyColor();
+    const oldSeasonCol = '#00f0ff'; // Cyan for old season contrast
 
-    // ─── 1. DARK GRADIENT OVERLAY ───
-    const overlay = ctx.createLinearGradient(0, 0, 0, h);
-    overlay.addColorStop(0, 'rgba(0,0,0,0.4)');
-    overlay.addColorStop(0.5, 'rgba(0,0,0,0.2)');
-    overlay.addColorStop(0.7, 'rgba(0,0,0,0.6)');
-    overlay.addColorStop(1, 'rgba(0,0,0,0.95)');
-    ctx.fillStyle = overlay;
-    ctx.fillRect(0, 0, w, h);
+    // ─── 1. BACKGROUND & TECH GRID ───
+    if (!this.bgImage()) {
+      const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w);
+      bg.addColorStop(0, '#0a0a0a');
+      bg.addColorStop(1, '#020202');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      // Dark cinematic overlay over image
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.fillRect(0, 0, w, h);
+    }
 
-    // ─── 2. CHECKERED SIDE ACCENTS ───
-    const checkerSize = Math.round(w * 0.038);
-    const checkerCols = 3;
-    const checkerRows = Math.ceil(h / checkerSize);
+    // Tech Grid Lines
+    ctx.strokeStyle = `${border}15`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = 0; x <= w; x += 100) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+    for (let y = 0; y <= h; y += 100) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+    ctx.stroke();
 
-    const drawCheckers = (startX: number) => {
-      for (let row = 0; row < checkerRows; row++) {
-        for (let col = 0; col < checkerCols; col++) {
-          const isEven = (row + col) % 2 === 0;
-          ctx.fillStyle = isEven ? `${accent}cc` : `${accent}22`;
-          ctx.fillRect(startX + col * checkerSize, row * checkerSize, checkerSize, checkerSize);
-        }
-      }
+    // Corner Crosshairs
+    const drawCross = (cx: number, cy: number) => {
+      ctx.strokeStyle = accent; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cx - 15, cy); ctx.lineTo(cx + 15, cy);
+      ctx.moveTo(cx, cy - 15); ctx.lineTo(cx, cy + 15); ctx.stroke();
     };
+    drawCross(40, 40); drawCross(w - 40, 40);
+    drawCross(40, h - 40); drawCross(w - 40, h - 40);
 
-    ctx.save();
-    ctx.globalAlpha = 0.7;
-    drawCheckers(0);
-    drawCheckers(w - checkerCols * checkerSize);
-    ctx.globalAlpha = 1;
-    ctx.restore();
-
-    // ─── 3. SUBTITLE / TAG LINE ───
-    const tagY = h * 0.18;
-    const tagText = (this.compTitle() || 'SEASON COMPARISON').toUpperCase();
-    const tagFontSz = Math.round(w * 0.026);
+    // ─── 2. HEADER ───
     ctx.textAlign = 'center';
-    ctx.font = `700 ${tagFontSz}px "Inter", sans-serif`;
-    ctx.fillStyle = `${titleCol}cc`;
+    ctx.font = `900 ${Math.round(w * 0.045)}px "Orbitron", "Inter", sans-serif`;
+    ctx.fillStyle = titleCol;
     // @ts-ignore
-    ctx.letterSpacing = '6px';
-    ctx.fillText(tagText, w / 2, tagY);
+    ctx.letterSpacing = '8px';
+    const mainTitle = (this.compTitle() || 'PERFORMANCE EVOLUTION').toUpperCase();
+    ctx.fillText(mainTitle, w / 2, h * 0.12);
     // @ts-ignore
     ctx.letterSpacing = '0px';
 
-    // ─── EXTRACT HERO ROW (OVERALL) AND BADGE ROWS ───
+    const subTitle = (this.compEventLabel() || 'FORMULA STUDENT UK').toUpperCase();
+    ctx.font = `700 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
+    ctx.fillStyle = accent;
+    ctx.fillText(`${this.compLastSeason()}   VS   ${this.compThisSeason()}`, w / 2, h * 0.16);
+    
+    // Header underline glow
+    const lineGrad = ctx.createLinearGradient(w*0.2, 0, w*0.8, 0);
+    lineGrad.addColorStop(0, 'transparent'); lineGrad.addColorStop(0.5, accent); lineGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = lineGrad;
+    ctx.shadowColor = accent; ctx.shadowBlur = 15;
+    ctx.fillRect(w * 0.2, h * 0.18, w * 0.6, 2);
+    ctx.shadowBlur = 0;
+
+    // ─── DATA EXTRACTION ───
     const allRows = this.compRows();
     let heroRow = allRows.find(r => r.event.toUpperCase() === 'OVERALL');
     let badgeRows = allRows.filter(r => r.event.toUpperCase() !== 'OVERALL');
-    
-    // If no overall found, use the last row as hero
     if (!heroRow && allRows.length > 0) {
       heroRow = allRows[allRows.length - 1];
       badgeRows = allRows.slice(0, allRows.length - 1);
     }
 
-    // ─── 4. GIANT HERO COMPARISON ───
-    let divY = h * 0.44;
-    
+    // ─── 3. GIANT HERO HEXAGON (OVERALL) ───
+    let startY = h * 0.25;
     if (heroRow) {
-      const heroVal = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim(); // Remove emojis for the huge text
-      const rankSz = Math.round(w * 0.25);
-      ctx.font = `900 ${rankSz}px "Orbitron", "Inter", sans-serif`;
-      ctx.textAlign = 'center';
-
-      // Text shadow
-      ctx.shadowColor = accent;
-      ctx.shadowBlur = 60;
-      ctx.fillStyle = accent;
-      ctx.fillText(heroVal, w / 2 + 5, h * 0.42 + 5);
+      const hexCy = h * 0.38;
+      const hexR = w * 0.15;
       
-      ctx.shadowColor = '#000000';
-      ctx.shadowBlur = 20;
-      ctx.fillStyle = titleCol;
-      ctx.fillText(heroVal, w / 2, h * 0.42);
-      ctx.shadowBlur = 0;
-
-      // "OVERALL" LABEL
-      const overallSz = Math.round(w * 0.075);
-      ctx.font = `900 ${overallSz}px "Orbitron", "Inter", sans-serif`;
-      ctx.fillStyle = titleCol;
-      ctx.shadowColor = `${accent}88`;
-      ctx.shadowBlur = 30;
-      ctx.fillText(heroRow.event.toUpperCase(), w / 2, h * 0.42 + overallSz * 1.1);
-      ctx.shadowBlur = 0;
-
-      // "LAST SEASON: X" PILL
-      const prevText = `${this.compLastSeason() || 'LAST SEASON'}: ${heroRow.last}`;
-      const pillSz = Math.round(w * 0.018);
-      ctx.font = `700 ${pillSz}px "Inter", sans-serif`;
-      const pW = ctx.measureText(prevText).width + 60;
-      const pH = pillSz * 2.2;
-      const pY = h * 0.42 + overallSz * 1.5;
+      // Draw glowing Hexagon
+      ctx.save();
+      ctx.translate(w / 2, hexCy);
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 2;
+        const hx = Math.cos(angle) * hexR;
+        const hy = Math.sin(angle) * hexR;
+        if (i === 0) ctx.moveTo(hx, hy); else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
       
-      ctx.fillStyle = `${accent}33`;
+      ctx.lineWidth = 4;
       ctx.strokeStyle = accent;
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.roundRect((w - pW)/2, pY, pW, pH, pH/2); ctx.fill(); ctx.stroke();
-      
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(prevText, w / 2, pY + pH * 0.68);
+      ctx.shadowColor = accent;
+      ctx.shadowBlur = 40;
+      const hexGrad = ctx.createLinearGradient(0, -hexR, 0, hexR);
+      hexGrad.addColorStop(0, `${accent}44`);
+      hexGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = hexGrad;
+      ctx.fill(); ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.restore();
 
-      divY = pY + pH + h * 0.05;
+      // Hero Event Label
+      ctx.font = `800 ${Math.round(w * 0.025)}px "Inter", sans-serif`;
+      ctx.fillStyle = titleCol;
+      // @ts-ignore
+      ctx.letterSpacing = '4px';
+      ctx.fillText(heroRow.event.toUpperCase(), w / 2, hexCy - hexR * 0.5);
+      // @ts-ignore
+      ctx.letterSpacing = '0px';
+
+      // Big Current Rank
+      const cleanCurrent = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      ctx.font = `900 ${Math.round(w * 0.12)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#000000'; ctx.shadowBlur = 10;
+      ctx.fillText(cleanCurrent, w / 2, hexCy + hexR * 0.15);
+      ctx.shadowBlur = 0;
+
+      // Small Old Rank below
+      const oldRankStr = `WAS ${heroRow.last}`;
+      ctx.font = `700 ${Math.round(w * 0.02)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = oldSeasonCol;
+      ctx.fillText(oldRankStr, w / 2, hexCy + hexR * 0.55);
+
+      startY = hexCy + hexR + h * 0.05;
     }
 
-    // ─── 5. HORIZONTAL DIVIDER ───
-    const divW = w * 0.6;
-    const divX = (w - divW) / 2;
-    const divGrad = ctx.createLinearGradient(divX, 0, divX + divW, 0);
-    divGrad.addColorStop(0, 'transparent');
-    divGrad.addColorStop(0.5, `${border}cc`);
-    divGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = divGrad;
-    ctx.fillRect(divX, divY, divW, 2);
+    // ─── 4. SLANTED HUD PANELS FOR EVENTS ───
+    if (badgeRows.length > 0) {
+      // 2-column grid layout
+      const cols = 2;
+      const rows = Math.ceil(badgeRows.length / cols);
+      const panelW = w * 0.42;
+      const panelH = h * 0.11;
+      const gapX = w * 0.06;
+      const gapY = h * 0.03;
+      const gridTotalW = panelW * 2 + gapX;
+      const startX = (w - gridTotalW) / 2;
+      const skewX = w * 0.025; // How slanted the panels are
 
-    // ─── 6. COMPARISON BADGES (CIRCLES AT BOTTOM) ───
-    const badgeCount = Math.min(badgeRows.length, 5);
-
-    if (badgeCount > 0) {
-      const badgeZoneTop = divY + h * 0.04;
-      const badgeZoneH = h * 0.92 - badgeZoneTop;
-      const badgeDiam = Math.min(Math.round(w * 0.14), Math.round(badgeZoneH * 0.5));
-      const badgeGap = (w * 0.88 - badgeDiam * badgeCount) / Math.max(badgeCount - 1, 1);
-      const badgeStartX = w * 0.06 + badgeDiam / 2;
-
-      badgeRows.slice(0, badgeCount).forEach((row, i) => {
-        const bx = badgeStartX + i * (badgeDiam + badgeGap);
-        const by = badgeZoneTop + badgeDiam / 2;
-
+      badgeRows.forEach((row, i) => {
+        const c = i % cols;
+        const r = Math.floor(i / cols);
+        const px = startX + c * (panelW + gapX);
+        const py = startY + r * (panelH + gapY);
         const isImproved = row.improved && this.compHighlightImproved();
 
-        // Outer ring
+        // Draw Slanted Panel Background
         ctx.beginPath();
-        ctx.arc(bx, by, badgeDiam / 2 + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = isImproved ? `${accent}aa` : `${border}55`;
-        ctx.lineWidth = isImproved ? 3 : 1.5;
+        ctx.moveTo(px + skewX, py);
+        ctx.lineTo(px + panelW, py);
+        ctx.lineTo(px + panelW - skewX, py + panelH);
+        ctx.lineTo(px, py + panelH);
+        ctx.closePath();
+
+        const pGrad = ctx.createLinearGradient(px, py, px + panelW, py);
+        pGrad.addColorStop(0, isImproved ? `${accent}22` : 'rgba(255,255,255,0.05)');
+        pGrad.addColorStop(1, 'rgba(0,0,0,0.4)');
+        ctx.fillStyle = pGrad;
+        ctx.fill();
+
+        // Highlight Border (Left edge thick)
+        ctx.beginPath();
+        ctx.moveTo(px + skewX, py);
+        ctx.lineTo(px, py + panelH);
+        ctx.strokeStyle = isImproved ? accent : border;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = isImproved ? accent : 'transparent';
+        ctx.shadowBlur = isImproved ? 15 : 0;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Top border thin
+        ctx.beginPath();
+        ctx.moveTo(px + skewX, py);
+        ctx.lineTo(px + panelW, py);
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Panel Content (No skew on text)
+        const contentLeft = px + skewX + 15;
+        const contentRight = px + panelW - 25;
+        const cy = py + panelH / 2;
+
+        // Event Name
+        ctx.textAlign = 'left';
+        ctx.font = `800 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
+        ctx.fillStyle = titleCol;
+        // @ts-ignore
+        ctx.letterSpacing = '1px';
+        ctx.fillText(row.event.toUpperCase(), contentLeft, py + panelH * 0.35);
+        // @ts-ignore
+        ctx.letterSpacing = '0px';
+
+        // Old Rank
+        ctx.font = `700 ${Math.round(w * 0.025)}px "Orbitron", sans-serif`;
+        ctx.fillStyle = oldSeasonCol;
+        ctx.fillText(row.last, contentLeft, py + panelH * 0.75);
+
+        // Arrow / Line
+        const oldW = ctx.measureText(row.last).width;
+        const newText = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        ctx.font = `900 ${Math.round(w * 0.035)}px "Orbitron", sans-serif`;
+        const newW = ctx.measureText(newText).width;
+
+        const lineStartX = contentLeft + oldW + 15;
+        const lineEndX = contentRight - newW - 15;
+        const lineY = py + panelH * 0.65;
+        
+        ctx.strokeStyle = isImproved ? accent : 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(lineStartX, lineY);
+        ctx.lineTo(lineEndX, lineY);
+        ctx.stroke();
+
+        if (isImproved) {
+          ctx.beginPath();
+          ctx.moveTo(lineEndX - 8, lineY - 6);
+          ctx.lineTo(lineEndX + 4, lineY);
+          ctx.lineTo(lineEndX - 8, lineY + 6);
+          ctx.fillStyle = accent;
+          ctx.fill();
+        }
+
+        // New Rank
+        ctx.textAlign = 'right';
+        ctx.fillStyle = isImproved ? '#ffffff' : titleCol;
         if (isImproved) {
           ctx.shadowColor = accent;
           ctx.shadowBlur = 15;
         }
-        ctx.stroke();
+        ctx.fillText(newText, contentRight, py + panelH * 0.78);
         ctx.shadowBlur = 0;
-
-        // Badge circle fill
-        const badgeBg = ctx.createRadialGradient(bx - badgeDiam * 0.15, by - badgeDiam * 0.15, 0, bx, by, badgeDiam / 2);
-        badgeBg.addColorStop(0, isImproved ? `${accent}ff` : `${border}22`);
-        badgeBg.addColorStop(1, isImproved ? `${accent}99` : `${border}05`);
-        ctx.fillStyle = badgeBg;
-        ctx.beginPath();
-        ctx.arc(bx, by, badgeDiam / 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Badge border
-        ctx.strokeStyle = isImproved ? titleCol : `${border}88`;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(bx, by, badgeDiam / 2, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Rank text (current)
-        const rankFontSz = Math.round(badgeDiam * 0.35);
-        const cleanCurrent = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-        ctx.textAlign = 'center';
-        ctx.font = `900 ${rankFontSz}px "Orbitron", "Inter", sans-serif`;
-        ctx.fillStyle = isImproved ? '#ffffff' : `${titleCol}dd`;
-        if (isImproved) {
-          ctx.shadowColor = '#000000';
-          ctx.shadowBlur = 8;
-        }
-        ctx.fillText(cleanCurrent, bx, by + rankFontSz * 0.36);
-        ctx.shadowBlur = 0;
-
-        // "Was: X" pill intersecting bottom of circle
-        const wasText = `WAS ${row.last}`;
-        const wasSz = Math.round(badgeDiam * 0.14);
-        ctx.font = `700 ${wasSz}px "Inter", sans-serif`;
-        const wasW = ctx.measureText(wasText).width + 24;
-        const wasH = wasSz * 2.2;
-        const wasY = by + badgeDiam / 2 - wasH / 2;
-        
-        ctx.fillStyle = '#0a0f18';
-        ctx.strokeStyle = isImproved ? accent : `${border}66`;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.roundRect(bx - wasW/2, wasY, wasW, wasH, wasH/2); ctx.fill(); ctx.stroke();
-        
-        ctx.fillStyle = isImproved ? accent : `${bodyCol}99`;
-        ctx.fillText(wasText, bx, wasY + wasH * 0.68);
-
-        // Event label below badge
-        const evFontSz = Math.round(w * 0.016);
-        const evText = (row.event || '').toUpperCase();
-        ctx.font = `700 ${evFontSz}px "Inter", sans-serif`;
-        ctx.fillStyle = `${titleCol}cc`;
-        
-        const words = evText.split(' ');
-        const maxW = badgeDiam + badgeGap * 0.8;
-        const lines: string[] = [];
-        let curLine = '';
-        for (const word of words) {
-          const test = curLine ? curLine + ' ' + word : word;
-          if (ctx.measureText(test).width > maxW && curLine) {
-            lines.push(curLine);
-            curLine = word;
-          } else {
-            curLine = test;
-          }
-        }
-        if (curLine) lines.push(curLine);
-
-        const lineH = evFontSz * 1.3;
-        const textBlockTop = wasY + wasH + evFontSz * 1.2;
-        lines.slice(0, 2).forEach((ln, li) => {
-          ctx.fillText(ln, bx, textBlockTop + li * lineH);
-        });
       });
     }
 
-    // ─── 7. FOOTER ───
-    const footTextY = h * 0.965;
+    // ─── 5. FOOTER BRANDING ───
+    const footY = h * 0.96;
     ctx.textAlign = 'center';
-    ctx.font = `700 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
-    ctx.fillStyle = `${bodyCol}66`;
+    ctx.font = `600 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
+    ctx.fillStyle = `${bodyCol}55`;
     // @ts-ignore
-    ctx.letterSpacing = '5px';
-    ctx.fillText((this.compEventLabel() || 'FORMULA STUDENT').toUpperCase(), w / 2, footTextY);
+    ctx.letterSpacing = '10px';
+    ctx.fillText('WWW.TRACERSMEC.COM', w / 2, footY);
     // @ts-ignore
     ctx.letterSpacing = '0px';
 
