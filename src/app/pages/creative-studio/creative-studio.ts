@@ -20,6 +20,7 @@ export class CreativeStudio implements OnInit {
   // Expose these for the UI
   format = signal<'story' | 'square' | 'portrait' | 'landscape'>('story');
   leftPanelTab = signal<'assets' | 'layers'>('assets');
+  advancedMode = signal(false);
   
   exporting = signal(false);
 
