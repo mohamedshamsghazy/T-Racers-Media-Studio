@@ -2827,52 +2827,46 @@ export class AchievementGenerator implements OnInit {
     const border = this.universalBorderColor();
     const titleCol = this.universalTitleColor();
     const bodyCol = this.universalBodyColor();
-    const dimCol = 'rgba(255,255,255,0.2)';
 
-    // ─── 1. BACKGROUND (Deep Vignette + Tech Dots) ───
+    // ─── 1. BACKGROUND (Clean & Premium) ───
     if (!this.bgImage()) {
-      const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.8);
-      bg.addColorStop(0, '#0a0d14');
+      const bg = ctx.createRadialGradient(w / 2, 0, 0, w / 2, h, w);
+      bg.addColorStop(0, '#11151c');
       bg.addColorStop(1, '#020305');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
     } else {
-      const overlay = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.9);
-      overlay.addColorStop(0, 'rgba(0,0,0,0.5)');
-      overlay.addColorStop(1, 'rgba(0,0,0,0.95)');
+      const overlay = ctx.createLinearGradient(0, 0, 0, h);
+      overlay.addColorStop(0, 'rgba(0,0,0,0.7)');
+      overlay.addColorStop(0.5, 'rgba(0,0,0,0.5)');
+      overlay.addColorStop(1, 'rgba(0,0,0,0.9)');
       ctx.fillStyle = overlay;
       ctx.fillRect(0, 0, w, h);
     }
 
-    // Dot grid background
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    for (let x = 0; x < w; x += 40) {
-      for (let y = 0; y < h; y += 40) {
-        ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI * 2); ctx.fill();
-      }
-    }
-
-    // ─── 2. HEADER (Cyber/Racing Style) ───
-    const hdrTop = h * 0.08;
+    // ─── 2. HEADER ───
+    const hdrTop = h * 0.1;
     ctx.textAlign = 'center';
-    
-    // Main Title
-    const mainTitle = (this.compTitle() || 'PERFORMANCE TELEMETRY').toUpperCase();
-    ctx.font = `900 ${Math.round(w * 0.045)}px "Orbitron", "Inter", sans-serif`;
-    ctx.fillStyle = titleCol;
-    // @ts-ignore
-    ctx.letterSpacing = '6px';
-    ctx.fillText(mainTitle, w / 2, hdrTop);
-    
-    // Subtitle
-    const subTitle = `${this.compLastSeason()}  //  ${this.compThisSeason()}`.toUpperCase();
-    ctx.font = `700 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
+
+    // "SEASON COMPARISON" Tag
+    ctx.font = `800 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
     ctx.fillStyle = accent;
     // @ts-ignore
-    ctx.letterSpacing = '10px';
-    ctx.fillText(subTitle, w / 2, hdrTop + h * 0.035);
+    ctx.letterSpacing = '8px';
+    ctx.fillText((this.compTitle() || 'SEASON COMPARISON').toUpperCase(), w / 2, hdrTop);
+    
+    // "FSUK 2024 VS 2025"
+    const subTitle = `${this.compLastSeason()} VS ${this.compThisSeason()}`.toUpperCase();
+    ctx.font = `900 ${Math.round(w * 0.045)}px "Orbitron", "Inter", sans-serif`;
+    ctx.fillStyle = titleCol;
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 15;
+    // @ts-ignore
+    ctx.letterSpacing = '2px';
+    ctx.fillText(subTitle, w / 2, hdrTop + h * 0.055);
     // @ts-ignore
     ctx.letterSpacing = '0px';
+    ctx.shadowBlur = 0;
 
     // ─── DATA EXTRACTION ───
     const allRows = this.compRows();
@@ -2883,167 +2877,143 @@ export class AchievementGenerator implements OnInit {
       badgeRows = allRows.slice(0, allRows.length - 1);
     }
 
-    // Helper: Parse Rank to Percentage (1st = 100%, 40th = 5%)
-    const parseRankPerc = (rankStr: string) => {
-      const num = parseInt(rankStr.replace(/[^0-9]/g, ''));
-      if (isNaN(num)) return 0.1;
-      return Math.max(0.05, 1 - (num - 1) / 35); // Assuming 35 is a "bad" rank for visual scaling
-    };
-
-    // ─── 3. HERO: THE RPM GAUGE (OVERALL) ───
-    const dialCy = h * 0.35;
-    const dialR = w * 0.16;
+    // ─── 3. HERO (OVERALL RANK) ───
+    let listStartY = h * 0.22;
 
     if (heroRow) {
-      const oldP = parseRankPerc(heroRow.last);
-      const newP = parseRankPerc(heroRow.current);
+      const heroY = h * 0.28;
+      const heroW = w * 0.6;
+      const heroH = h * 0.18;
+      const heroX = (w - heroW) / 2;
+      const isImproved = heroRow.improved && this.compHighlightImproved();
 
-      // Outer dashed ring
-      ctx.save();
-      ctx.translate(w / 2, dialCy);
-      ctx.strokeStyle = dimCol;
-      ctx.lineWidth = 3;
-      ctx.setLineDash([4, 8]);
-      ctx.beginPath();
-      ctx.arc(0, 0, dialR, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      // Dial Background Track
-      ctx.beginPath();
-      ctx.arc(0, 0, dialR - 15, Math.PI * 0.75, Math.PI * 2.25);
-      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-      ctx.lineWidth = 12;
-      ctx.lineCap = 'round';
-      ctx.stroke();
+      // Hero Card Background
+      ctx.fillStyle = 'rgba(255,255,255,0.03)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 16); ctx.fill(); ctx.stroke();
 
-      // Old Season Arc (Grey)
-      const oldAngle = Math.PI * 0.75 + (Math.PI * 1.5) * oldP;
-      ctx.beginPath();
-      ctx.arc(0, 0, dialR - 15, Math.PI * 0.75, oldAngle);
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-      ctx.lineWidth = 12;
-      ctx.stroke();
+      // Inner Accent Glow
+      if (isImproved) {
+        const glow = ctx.createLinearGradient(heroX, heroY, heroX, heroY + heroH);
+        glow.addColorStop(0, `${accent}33`);
+        glow.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.roundRect(heroX, heroY, heroW, heroH, 16); ctx.fill();
+        
+        // Top edge red line
+        ctx.fillStyle = accent;
+        ctx.shadowColor = accent; ctx.shadowBlur = 15;
+        ctx.beginPath(); ctx.roundRect(heroX, heroY - 1, heroW, 4, [16,16,0,0]); ctx.fill();
+        ctx.shadowBlur = 0;
+      }
 
-      // New Season Arc (Glowing Red)
-      const newAngle = Math.PI * 0.75 + (Math.PI * 1.5) * newP;
-      ctx.beginPath();
-      ctx.arc(0, 0, dialR - 15, Math.PI * 0.75, newAngle);
-      ctx.strokeStyle = accent;
-      ctx.lineWidth = 12;
-      ctx.shadowColor = accent;
-      ctx.shadowBlur = 20;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Inner glow radial
-      const innerGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, dialR);
-      innerGlow.addColorStop(0, `${accent}00`);
-      innerGlow.addColorStop(0.8, `${accent}11`);
-      innerGlow.addColorStop(1, `${accent}33`);
-      ctx.fillStyle = innerGlow;
-      ctx.beginPath(); ctx.arc(0, 0, dialR - 20, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-
-      // Dial Text
+      // "OVERALL RANK" text
       ctx.textAlign = 'center';
-      
-      // "OVERALL"
       ctx.font = `700 ${Math.round(w * 0.018)}px "Inter", sans-serif`;
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       // @ts-ignore
       ctx.letterSpacing = '6px';
-      ctx.fillText(heroRow.event.toUpperCase(), w / 2, dialCy - dialR * 0.35);
+      ctx.fillText(heroRow.event.toUpperCase(), w / 2, heroY + h * 0.045);
       // @ts-ignore
       ctx.letterSpacing = '0px';
 
-      // Massive Rank
-      const cleanNew = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      ctx.font = `900 ${Math.round(w * 0.12)}px "Orbitron", sans-serif`;
+      // Ranks Comparison inside Hero
+      const cy = heroY + h * 0.11;
+      
+      const oldR = heroRow.last.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      const newR = heroRow.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+
+      // 2024 Rank
+      ctx.textAlign = 'right';
+      ctx.font = `800 ${Math.round(w * 0.06)}px "Orbitron", sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.fillText(oldR, w / 2 - w * 0.08, cy + w * 0.02);
+
+      // Arrow
+      ctx.textAlign = 'center';
+      ctx.font = `900 ${Math.round(w * 0.04)}px "Inter", sans-serif`;
+      ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.4)';
+      ctx.fillText('➔', w / 2, cy + w * 0.015);
+
+      // 2025 Rank
+      ctx.textAlign = 'left';
+      ctx.font = `900 ${Math.round(w * 0.08)}px "Orbitron", sans-serif`;
       ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = accent;
-      ctx.shadowBlur = 30;
-      ctx.fillText(cleanNew, w / 2, dialCy + dialR * 0.15);
+      if (isImproved) {
+        ctx.shadowColor = accent; ctx.shadowBlur = 20;
+      }
+      ctx.fillText(newR, w / 2 + w * 0.08, cy + w * 0.028);
       ctx.shadowBlur = 0;
 
-      // "UP FROM X"
-      ctx.font = `700 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
-      ctx.fillStyle = accent;
-      ctx.fillText(`▲ UP FROM ${heroRow.last}`, w / 2, dialCy + dialR * 0.45);
+      listStartY = heroY + heroH + h * 0.06;
     }
 
-    // ─── 4. TELEMETRY BARS (EVENTS) ───
+    // ─── 4. EVENTS GRID (Clear Glass Cards) ───
     if (badgeRows.length > 0) {
       const cols = 2;
-      const rows = Math.ceil(badgeRows.length / cols);
-      const startY = dialCy + dialR + h * 0.08;
-      
-      const barZoneW = w * 0.85;
-      const barZoneX = (w - barZoneW) / 2;
-      const colW = (barZoneW - w * 0.08) / 2;
-      const rowH = h * 0.085;
-      const gapY = h * 0.035;
+      const gapX = w * 0.04;
+      const gapY = h * 0.03;
+      const cardW = (w * 0.85 - gapX) / 2;
+      const cardH = h * 0.11;
+      const startX = (w - (cardW * 2 + gapX)) / 2;
 
       badgeRows.forEach((row, i) => {
         const c = i % cols;
         const r = Math.floor(i / cols);
-        const bx = barZoneX + c * (colW + w * 0.08);
-        const by = startY + r * (rowH + gapY);
-
-        const oldP = parseRankPerc(row.last);
-        const newP = parseRankPerc(row.current);
+        const bx = startX + c * (cardW + gapX);
+        const by = listStartY + r * (cardH + gapY);
         const isImproved = row.improved && this.compHighlightImproved();
 
-        const cleanOld = row.last || '—';
-        const cleanNew = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        // Card BG
+        ctx.fillStyle = 'rgba(255,255,255,0.02)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(bx, by, cardW, cardH, 12); ctx.fill(); ctx.stroke();
 
-        // Event Title (Above the bar)
+        // Left accent bar
+        if (isImproved) {
+          ctx.fillStyle = accent;
+          ctx.beginPath(); ctx.roundRect(bx - 1, by, 4, cardH, [12,0,0,12]); ctx.fill();
+        }
+
+        // Event Name
         ctx.textAlign = 'left';
-        ctx.font = `800 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
-        ctx.fillStyle = titleCol;
+        ctx.font = `700 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
+        ctx.fillStyle = '#ffffff';
         // @ts-ignore
         ctx.letterSpacing = '1px';
-        ctx.fillText(row.event.toUpperCase(), bx, by);
+        ctx.fillText(row.event.toUpperCase(), bx + w * 0.03, by + h * 0.04);
         // @ts-ignore
         ctx.letterSpacing = '0px';
 
-        // The Bar Track
-        const trackY = by + h * 0.015;
-        const trackH = h * 0.025;
-        const trackW = colW * 0.75; // Leave room for the big rank on the right
-        
-        ctx.fillStyle = 'rgba(255,255,255,0.05)';
-        ctx.beginPath(); ctx.roundRect(bx, trackY, trackW, trackH, trackH / 2); ctx.fill();
+        const cy = by + h * 0.08;
 
-        // Old Rank Fill (Grey/Dim)
-        const oldFillW = trackW * oldP;
-        ctx.fillStyle = 'rgba(255,255,255,0.2)';
-        ctx.beginPath(); ctx.roundRect(bx, trackY, oldFillW, trackH, trackH / 2); ctx.fill();
-
-        // New Rank Fill (Red Glowing)
-        const newFillW = trackW * newP;
-        ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.4)';
-        if (isImproved) {
-          ctx.shadowColor = accent; ctx.shadowBlur = 15;
-        }
-        ctx.beginPath(); ctx.roundRect(bx, trackY, newFillW, trackH, trackH / 2); ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Old Rank Text (Inside or near the track)
-        ctx.font = `700 ${Math.round(w * 0.014)}px "Inter", sans-serif`;
-        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        // Old Rank
+        const oldR = row.last || '—';
         ctx.textAlign = 'left';
-        ctx.fillText(`WAS ${cleanOld}`, bx + 10, trackY + trackH * 0.75);
+        ctx.font = `800 ${Math.round(w * 0.024)}px "Orbitron", sans-serif`;
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillText(oldR, bx + w * 0.03, cy);
+        const oldW = ctx.measureText(oldR).width;
 
-        // Huge New Rank Text (Right side of the bar)
-        const rankX = bx + trackW + 15;
+        // Arrow
+        const arrowX = bx + w * 0.03 + oldW + w * 0.02;
         ctx.textAlign = 'left';
-        ctx.font = `900 ${Math.round(w * 0.035)}px "Orbitron", sans-serif`;
+        ctx.font = `900 ${Math.round(w * 0.02)}px "Inter", sans-serif`;
+        ctx.fillStyle = isImproved ? accent : 'rgba(255,255,255,0.2)';
+        ctx.fillText('➔', arrowX, cy - w * 0.003);
+        const arrW = ctx.measureText('➔').width;
+
+        // New Rank
+        const newR = row.current.replace(/[^a-zA-Z0-9\s]/g, '').trim() || '—';
+        const newX = arrowX + arrW + w * 0.02;
+        ctx.font = `900 ${Math.round(w * 0.032)}px "Orbitron", sans-serif`;
         ctx.fillStyle = isImproved ? '#ffffff' : titleCol;
         if (isImproved) {
-          ctx.shadowColor = accent; ctx.shadowBlur = 15;
+          ctx.shadowColor = accent; ctx.shadowBlur = 10;
         }
-        ctx.fillText(cleanNew, rankX, trackY + trackH * 0.9);
+        ctx.fillText(newR, newX, cy + w * 0.002);
         ctx.shadowBlur = 0;
       });
     }
@@ -3052,7 +3022,7 @@ export class AchievementGenerator implements OnInit {
     const footY = h * 0.96;
     ctx.textAlign = 'center';
     ctx.font = `600 ${Math.round(w * 0.016)}px "Inter", sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
     // @ts-ignore
     ctx.letterSpacing = '8px';
     ctx.fillText((this.compEventLabel() || 'WWW.TRACERSMEC.COM').toUpperCase(), w / 2, footY);
