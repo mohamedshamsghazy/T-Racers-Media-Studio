@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild, inject, signal, input } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject, signal, input, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
 import { ImageUrlService } from '../../services/image-url.service';
+import { CreativeEngineService } from '../../services/creative-engine.service';
+import { toPng } from 'html-to-image';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
@@ -78,6 +80,7 @@ export class AchievementGenerator implements OnInit {
   
   private seo = inject(SeoService);
   private http = inject(HttpClient);
+  public creativeEngine = inject(CreativeEngineService);
   images = inject(ImageUrlService);
 
   // Sponsor Controls
@@ -104,7 +107,12 @@ export class AchievementGenerator implements OnInit {
 
   // Studio Features: Multi-Format, Presets, Hero Image, Stamps, and 6 Creative Modes
   canvasFormat = signal<'square' | 'story' | 'landscape' | 'portrait'>('square');
-  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison' | 'journey'>('achievements');
+  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison' | 'journey' | 'dom-victory'>('achievements');
+  renderEngine = computed(() => {
+    // For now, only 'victory' or specific new modes use the DOM engine.
+    if (this.studioMode() === 'dom-victory') return 'dom';
+    return 'canvas';
+  });
 
   // Hiring Mode Signals
   hiringDepartment = signal('MECHANICAL & AERODYNAMICS');
@@ -931,6 +939,26 @@ export class AchievementGenerator implements OnInit {
 
   async drawCanvas() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    
+    // DOM Engine Phase 1 logic
+    if (this.renderEngine() === 'dom') {
+      setTimeout(async () => {
+        const domNode = document.getElementById('dom-render-target');
+        if (domNode) {
+          try {
+            const dataUrl = await toPng(domNode, {
+              quality: 0.95,
+              pixelRatio: this.exportMultiplier()
+            });
+            this.previewUrl.set(dataUrl);
+          } catch (e) {
+            console.error('Failed to generate DOM image', e);
+          }
+        }
+      }, 100);
+      return;
+    }
+
     const canvas = this.canvasRef?.nativeElement;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');

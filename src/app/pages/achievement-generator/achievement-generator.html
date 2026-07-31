@@ -128,7 +128,16 @@
           class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group text-center">
           <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">📖</span>
           <span class="text-xs font-bold uppercase">Journey Series</span>
-          <span class="text-[10px] text-gray-400 mt-0.5">4-Part Storytelling</span>
+          <span class="text-[10px] text-gray-400 mt-0.5">Journey Series</span>
+        </button>
+
+        <!-- Phase 1: DOM Concept Button -->
+        <button (click)="studioMode.set('dom-victory'); drawCanvas()" 
+          [class]="studioMode() === 'dom-victory' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30 border-teal-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 min-w-[80px]">
+          <span class="text-xl mb-1">⚡</span>
+          <span class="text-[10px] font-bold">Creative Suite</span>
+          <span class="text-[10px] text-teal-400 mt-0.5">DOM Concept</span>
         </button>
       </div>
     </div>
@@ -1628,7 +1637,9 @@
             'max-width': canvasFormat() === 'story' ? '400px' : (canvasFormat() === 'landscape' ? '750px' : (canvasFormat() === 'portrait' ? '500px' : '600px')),
             'aspect-ratio': canvasFormat() === 'story' ? '9/16' : (canvasFormat() === 'landscape' ? '16/9' : (canvasFormat() === 'portrait' ? '4/5' : '1/1'))
           }">
-            <canvas 
+            
+            <!-- Canvas Engine -->
+            <canvas *ngIf="renderEngine() === 'canvas'"
               #mainCanvas 
               (mousedown)="onMouseDown($event)"
               (mousemove)="onMouseMove($event)"
@@ -1638,6 +1649,83 @@
               [class.cursor-move]="isHoveringDraggable() && !dragState.active"
               [class.cursor-grabbing]="dragState.active"
             ></canvas>
+
+            <!-- DOM Engine (Phase 1 Integration) -->
+            <div *ngIf="renderEngine() === 'dom'" 
+                 id="dom-render-target"
+                 class="w-full h-full shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden relative flex flex-col justify-between"
+                 [ngStyle]="{
+                   'background': 'linear-gradient(135deg, ' + creativeEngine.currentMood().colors.backgroundStart + ', ' + creativeEngine.currentMood().colors.backgroundEnd + ')'
+                 }">
+                 
+                 <!-- Dynamic Noise Overlay -->
+                 <div class="absolute inset-0 z-0 pointer-events-none opacity-50 mix-blend-overlay"
+                      [ngStyle]="{'opacity': creativeEngine.currentMood().effects.noiseIntensity}"
+                      style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
+                 </div>
+
+                 <!-- Grid Overlay -->
+                 <div *ngIf="creativeEngine.currentMood().effects.showGrid" class="absolute inset-0 z-0 pointer-events-none opacity-10"
+                      style="background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);">
+                 </div>
+
+                 <!-- Content Area -->
+                 <div class="relative z-10 flex-1 flex flex-col items-center justify-center p-12 text-center">
+                   
+                   <h3 class="text-2xl font-bold tracking-[0.3em] mb-4" 
+                       [ngStyle]="{
+                         'color': creativeEngine.currentMood().colors.accent,
+                         'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                       }">
+                     MATCH RESULT
+                   </h3>
+                   
+                   <h1 class="text-7xl mb-6 leading-tight"
+                       [ngStyle]="{
+                         'color': creativeEngine.currentMood().colors.primary,
+                         'font-family': creativeEngine.currentMood().typography.fontFamilyTitle,
+                         'font-weight': creativeEngine.currentMood().typography.titleWeight,
+                         'text-transform': creativeEngine.currentMood().typography.titleTransform
+                       }">
+                     {{ mainTitle() || 'VICTORY SECURED' }}
+                   </h1>
+
+                   <p class="text-xl max-w-2xl mx-auto"
+                      [ngStyle]="{
+                        'color': creativeEngine.currentMood().colors.textSecondary,
+                        'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                      }">
+                     {{ subtitle() || 'Pushing the boundaries of performance and securing our place at the top of the podium.' }}
+                   </p>
+
+                   <!-- Glassmorphism Card -->
+                   <div *ngIf="creativeEngine.currentMood().effects.glassmorphism" 
+                        class="mt-12 p-8 rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 flex gap-8">
+                     <div class="text-center">
+                       <div class="text-4xl font-black text-white" [ngStyle]="{'font-family': creativeEngine.currentMood().typography.fontFamilyTitle}">1ST</div>
+                       <div class="text-sm font-medium tracking-widest uppercase mt-1" [ngStyle]="{'color': creativeEngine.currentMood().colors.accent}">OVERALL</div>
+                     </div>
+                     <div class="w-px bg-white/10"></div>
+                     <div class="text-center">
+                       <div class="text-4xl font-black text-white" [ngStyle]="{'font-family': creativeEngine.currentMood().typography.fontFamilyTitle}">94.5</div>
+                       <div class="text-sm font-medium tracking-widest uppercase mt-1" [ngStyle]="{'color': creativeEngine.currentMood().colors.accent}">POINTS</div>
+                     </div>
+                   </div>
+
+                 </div>
+
+                 <!-- Footer -->
+                 <div class="relative z-10 w-full p-8 flex justify-between items-end">
+                   <div class="text-sm font-bold tracking-[0.2em] opacity-50" [ngStyle]="{'color': creativeEngine.currentMood().colors.textPrimary}">
+                     WWW.TRACERSMEC.COM
+                   </div>
+                   <div class="text-4xl font-black italic opacity-20" [ngStyle]="{'color': creativeEngine.currentMood().colors.textPrimary}">
+                     TR
+                   </div>
+                 </div>
+                 
+            </div>
+
           </div>
         </div>
       </div>
