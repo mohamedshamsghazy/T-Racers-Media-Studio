@@ -1,9 +1,9 @@
 <div class="h-screen w-full bg-[#06090e] text-white flex flex-col overflow-hidden">
   <!-- Top Bar -->
-  <div class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/50">
+  <div class="h-12 border-b border-slate-800 flex items-center justify-between px-4 bg-slate-900/50 shrink-0">
     <div class="flex items-center gap-4">
-      <span class="text-2xl">🎨</span>
-      <h1 class="font-bold text-lg tracking-wider">T-Racers Media Suite <span class="bg-red-600 text-[10px] px-2 py-1 rounded-full ml-2">UNIFIED</span></h1>
+      <span class="text-xl">🎨</span>
+      <h1 class="font-bold text-base tracking-wider">T-Racers Media Suite <span class="bg-red-600 text-[9px] px-1.5 py-0.5 rounded-full ml-1">UNIFIED</span></h1>
     </div>
     
     <div class="flex items-center gap-4">
@@ -62,32 +62,88 @@
                 class="flex-1 py-3 text-xs font-bold uppercase tracking-wider">
           Layers
         </button>
+        <button (click)="leftPanelTab.set('ai')" 
+                [class]="leftPanelTab() === 'ai' ? 'border-b-2 border-purple-500 text-white' : 'text-gray-400 hover:text-gray-200'"
+                class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center justify-center gap-1">
+          <span>✨</span> AI
+        </button>
       </div>
 
-      <!-- ASSETS TAB -->
+      <!-- ELEMENTS TAB -->
       <div *ngIf="leftPanelTab() === 'assets'" class="flex-1 overflow-y-auto p-4 space-y-6">
         
+        <!-- Typography -->
         <div>
-          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Add Elements</h3>
+          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3 border-b border-slate-800 pb-2">Typography</h3>
           <div class="grid grid-cols-2 gap-2">
-            <button (click)="editor.addLayer({type: 'text', name: 'New Text', text: 'T-RACERS', fontSize: 80, fontFamily: 'Inter', fontWeight: '900', color: '#ffffff'})"
-                    class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg p-3 text-center flex flex-col items-center gap-2 transition-colors">
-              <span class="text-2xl">T</span>
-              <span class="text-[10px] font-bold uppercase">Heading</span>
+            <button (click)="addSmartComponent('headline')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Headline</button>
+            <button (click)="addSmartComponent('subheadline')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Subheadline</button>
+            <button (click)="addSmartComponent('quote')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Quote</button>
+            <button (click)="addSmartComponent('numberCounter')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Number</button>
+          </div>
+        </div>
+
+        <!-- Motorsport -->
+        <div>
+          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3 border-b border-slate-800 pb-2">Motorsport</h3>
+          <div class="grid grid-cols-1 gap-2">
+            <button (click)="addSmartComponent('achievementCard')" class="bg-slate-800 hover:bg-slate-700 rounded p-3 text-xs font-bold text-left border border-slate-700 transition-colors flex items-center justify-between">
+              <span>Achievement Card</span> <span class="text-lg">🏆</span>
             </button>
-            <button (click)="editor.addLayer({type: 'text', name: 'Subtitle', text: 'Formula Student Team', fontSize: 32, fontFamily: 'Inter', fontWeight: '400', color: '#aaaaaa'})"
-                    class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg p-3 text-center flex flex-col items-center gap-2 transition-colors">
-              <span class="text-2xl">t</span>
-              <span class="text-[10px] font-bold uppercase">Body Text</span>
+            <button (click)="addSmartComponent('raceWeekend')" class="bg-slate-800 hover:bg-slate-700 rounded p-3 text-xs font-bold text-left border border-slate-700 transition-colors flex items-center justify-between">
+              <span>Race Weekend Block</span> <span class="text-lg">🏁</span>
             </button>
-            <button (click)="editor.addLayer({type: 'shape', name: 'Rectangle', width: 400, height: 200, backgroundColor: '#dc2626'})"
-                    class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg p-3 text-center flex flex-col items-center gap-2 transition-colors">
-              <span class="text-2xl">⬛</span>
-              <span class="text-[10px] font-bold uppercase">Rectangle</span>
+            <button (click)="addSmartComponent('heroBanner')" class="bg-slate-800 hover:bg-slate-700 rounded p-3 text-xs font-bold text-left border border-slate-700 transition-colors flex items-center justify-between">
+              <span>Hero Banner</span> <span class="text-lg">🚩</span>
             </button>
           </div>
         </div>
 
+        <!-- Media -->
+        <div>
+          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3 border-b border-slate-800 pb-2">Media & Shapes</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <button (click)="addSmartComponent('background')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Background</button>
+            <button (click)="addSmartComponent('car')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Car Asset</button>
+            <button (click)="addSmartComponent('logo')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Team Logo</button>
+            <button (click)="editor.addLayer({type: 'shape', name: 'Rectangle', width: 400, height: 200, backgroundColor: '#dc2626'})" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Basic Shape</button>
+          </div>
+        </div>
+
+        <!-- Effects -->
+        <div>
+          <h3 class="text-xs font-bold text-gray-500 uppercase mb-3 border-b border-slate-800 pb-2">Effects</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <button (click)="addSmartComponent('glow')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Red Glow</button>
+            <button (click)="addSmartComponent('noise')" class="bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Film Noise</button>
+            <button (click)="addSmartComponent('glassCard')" class="col-span-2 bg-slate-800 hover:bg-slate-700 rounded p-2 text-[10px] font-bold text-center border border-slate-700 transition-colors">Glassmorphism Card</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- AI TAB -->
+      <div *ngIf="leftPanelTab() === 'ai'" class="flex-1 overflow-y-auto p-4 space-y-6">
+        <div class="bg-gradient-to-br from-purple-900/40 to-slate-900 rounded-xl p-4 border border-purple-500/30 shadow-lg shadow-purple-900/20 mb-4">
+          <h2 class="text-sm font-bold text-white mb-2 flex items-center gap-2"><span>✨</span> AI Creative Assistant</h2>
+          <p class="text-[10px] text-gray-400 leading-relaxed mb-4">
+            Transform your design instantly using AI. Select a layer to refine it, or apply global composition upgrades.
+          </p>
+          <div class="space-y-2">
+            <button class="w-full bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 rounded-lg p-3 text-xs font-bold text-left transition-all flex items-center justify-between">
+              <span>Generate Background</span> <span class="text-lg">🌌</span>
+            </button>
+            <button class="w-full bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 rounded-lg p-3 text-xs font-bold text-left transition-all flex items-center justify-between">
+              <span>Improve Composition</span> <span class="text-lg">📐</span>
+            </button>
+            <button class="w-full bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 rounded-lg p-3 text-xs font-bold text-left transition-all flex items-center justify-between">
+              <span>Make More Premium</span> <span class="text-lg">💎</span>
+            </button>
+            <button class="w-full bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 rounded-lg p-3 text-xs font-bold text-left transition-all flex items-center justify-between">
+              <span>Add Cinematic Depth</span> <span class="text-lg">🎬</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- LAYERS TAB -->
@@ -138,10 +194,13 @@
         <!-- The Actual Render Target -->
         <div #renderTarget class="absolute inset-0 overflow-hidden bg-black" id="unified-canvas">
           
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" class="hidden">
+
           <div *ngFor="let layer of editor.layers()"
                [id]="layer.id"
                class="absolute"
                (mousedown)="$event.stopPropagation(); editor.selectLayer(layer.id)"
+               (dblclick)="$event.stopPropagation(); onLayerDoubleClick(layer)"
                [ngStyle]="{
                  'display': layer.hidden ? 'none' : 'block',
                  'left': layer.x + 'px',
@@ -240,13 +299,24 @@
         <!-- Text Properties -->
         <div *ngIf="layer.type === 'text'">
            <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Text</h3>
-           <textarea class="w-full bg-slate-800 rounded px-3 py-2 text-sm border border-slate-700 min-h-[80px] mb-3"
+           <textarea #textEditorInput class="w-full bg-slate-800 rounded px-3 py-2 text-sm border border-slate-700 min-h-[80px] mb-3"
                      [ngModel]="layer.text" (ngModelChange)="editor.updateLayer(layer.id, {text: $event})"></textarea>
            
-           <div class="flex flex-col mb-3">
-             <label class="text-[10px] text-gray-400 mb-1">Font Size</label>
-             <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700"
-                    [ngModel]="layer.fontSize" (ngModelChange)="editor.updateLayer(layer.id, {fontSize: $event})">
+           <div class="grid grid-cols-2 gap-2 mb-3">
+             <div class="flex flex-col">
+               <label class="text-[10px] text-gray-400 mb-1">Font Size</label>
+               <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                      [ngModel]="layer.fontSize" (ngModelChange)="editor.updateLayer(layer.id, {fontSize: $event})">
+             </div>
+             <div class="flex flex-col">
+               <label class="text-[10px] text-gray-400 mb-1">Align</label>
+               <select class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                       [ngModel]="layer.textAlign || 'left'" (ngModelChange)="editor.updateLayer(layer.id, {textAlign: $event})">
+                 <option value="left">Left</option>
+                 <option value="center">Center</option>
+                 <option value="right">Right</option>
+               </select>
+             </div>
            </div>
            
            <div class="flex flex-col mb-3">
@@ -258,11 +328,40 @@
 
         <!-- Shape Properties -->
         <div *ngIf="layer.type === 'shape'">
-           <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Fill</h3>
+           <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Fill & Stroke</h3>
            <div class="flex flex-col mb-3">
              <label class="text-[10px] text-gray-400 mb-1">Background Color</label>
              <input type="color" class="bg-slate-800 rounded border border-slate-700 h-8 w-full p-0 cursor-pointer"
                     [ngModel]="layer.backgroundColor" (ngModelChange)="editor.updateLayer(layer.id, {backgroundColor: $event})">
+           </div>
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Corner Radius</label>
+             <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                    [ngModel]="layer.borderRadius || 0" (ngModelChange)="editor.updateLayer(layer.id, {borderRadius: $event})">
+           </div>
+        </div>
+
+        <!-- Image Properties -->
+        <div *ngIf="layer.type === 'image'">
+           <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Image</h3>
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Source URL (or Double Click canvas to upload)</label>
+             <input type="text" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                    [ngModel]="layer.src" (ngModelChange)="editor.updateLayer(layer.id, {src: $event})">
+           </div>
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Corner Radius</label>
+             <input type="number" class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                    [ngModel]="layer.borderRadius || 0" (ngModelChange)="editor.updateLayer(layer.id, {borderRadius: $event})">
+           </div>
+           <div class="flex flex-col mb-3">
+             <label class="text-[10px] text-gray-400 mb-1">Fit</label>
+             <select class="bg-slate-800 rounded px-2 py-1 text-sm border border-slate-700 w-full"
+                     [ngModel]="layer.objectFit || 'cover'" (ngModelChange)="editor.updateLayer(layer.id, {objectFit: $event})">
+               <option value="cover">Cover</option>
+               <option value="contain">Contain</option>
+               <option value="fill">Fill</option>
+             </select>
            </div>
         </div>
 

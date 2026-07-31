@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgxMoveableModule, NgxMoveableComponent } from 'ngx-moveable';
 import { EditorStateService, Layer } from '../../services/editor-state.service';
 import { PRESETS } from './presets';
+import { SMART_COMPONENTS } from './smart-components';
 import { toPng } from 'html-to-image';
 
 @Component({
@@ -16,10 +17,13 @@ export class CreativeStudio implements OnInit {
   public editor = inject(EditorStateService);
   
   @ViewChild('renderTarget') renderTarget!: ElementRef<HTMLDivElement>;
+  @ViewChild('moveable') moveableComponent!: NgxMoveableComponent;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('textEditorInput') textEditorInput!: ElementRef<HTMLTextAreaElement>;
   
   // Expose these for the UI
   format = signal<'story' | 'square' | 'portrait' | 'landscape'>('story');
-  leftPanelTab = signal<'assets' | 'layers'>('assets');
+  leftPanelTab = signal<'assets' | 'layers' | 'ai'>('assets');
   advancedMode = signal(false);
   
   exporting = signal(false);
@@ -32,6 +36,50 @@ export class CreativeStudio implements OnInit {
     if (PRESETS[name]) {
       this.editor.loadPreset(PRESETS[name]);
     }
+  }
+
+  addSmartComponent(name: string) {
+    const component = SMART_COMPONENTS[name];
+    if (component) {
+      // Add a tiny offset so they don't stack perfectly if clicking multiple times
+      const offset = Math.floor(Math.random() * 20);
+      component.forEach(layerConfig => {
+        this.editor.addLayer({
+          ...layerConfig,
+          x: (layerConfig.x ?? 100) + offset,
+          y: (layerConfig.y ?? 100) + offset,
+        });
+      });
+    }
+  }
+
+  onLayerDoubleClick(layer: Layer) {
+    if (layer.type === 'image') {
+      this.fileInput.nativeElement.click();
+    } else if (layer.type === 'text') {
+      // Give Angular a tick to render the property panel if it was closed
+      setTimeout(() => {
+        if (this.textEditorInput) {
+          this.textEditorInput.nativeElement.focus();
+        }
+      }, 50);
+    }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && this.editor.selectedLayer()) {
+      const layer = this.editor.selectedLayer()!;
+      if (layer.type === 'image') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.editor.updateLayer(layer.id, { src: e.target?.result as string });
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    // Reset input
+    this.fileInput.nativeElement.value = '';
   }
 
   get targetWidth() {
