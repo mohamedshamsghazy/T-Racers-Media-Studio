@@ -107,10 +107,10 @@ export class AchievementGenerator implements OnInit {
 
   // Studio Features: Multi-Format, Presets, Hero Image, Stamps, and 6 Creative Modes
   canvasFormat = signal<'square' | 'story' | 'landscape' | 'portrait'>('square');
-  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison' | 'journey' | 'dom-victory'>('achievements');
+  studioMode = signal<'achievements' | 'hiring' | 'sponsor' | 'occasion' | 'reveal' | 'tech' | 'spotlight' | 'telemetry' | 'schedule' | 'comparison' | 'journey' | 'dom-victory' | 'dom-achievement' | 'dom-spotlight' | 'dom-journey'>('achievements');
   renderEngine = computed(() => {
-    // For now, only 'victory' or specific new modes use the DOM engine.
-    if (this.studioMode() === 'dom-victory') return 'dom';
+    const mode = this.studioMode();
+    if (mode === 'dom-victory' || mode === 'dom-achievement' || mode === 'dom-spotlight' || mode === 'dom-journey') return 'dom';
     return 'canvas';
   });
 
@@ -948,7 +948,11 @@ export class AchievementGenerator implements OnInit {
           try {
             const dataUrl = await toPng(domNode, {
               quality: 0.95,
-              pixelRatio: this.exportMultiplier()
+              pixelRatio: this.exportMultiplier(),
+              style: {
+                transform: 'translate(0, 0) scale(1)', // Force original size for export
+                position: 'static'
+              }
             });
             this.previewUrl.set(dataUrl);
           } catch (e) {

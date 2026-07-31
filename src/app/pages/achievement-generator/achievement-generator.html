@@ -131,14 +131,41 @@
           <span class="text-[10px] text-gray-400 mt-0.5">Journey Series</span>
         </button>
 
-        <!-- Phase 1: DOM Concept Button -->
+        <!-- DOM Mode Buttons (Phase 3) -->
+        <div class="h-10 w-px bg-slate-700 mx-1"></div> <!-- Separator -->
+        
         <button (click)="studioMode.set('dom-victory'); drawCanvas()" 
           [class]="studioMode() === 'dom-victory' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30 border-teal-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
           class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 min-w-[80px]">
           <span class="text-xl mb-1">⚡</span>
           <span class="text-[10px] font-bold">Creative Suite</span>
-          <span class="text-[10px] text-teal-400 mt-0.5">DOM Concept</span>
+          <span class="text-[10px] text-teal-400 mt-0.5">Victory</span>
         </button>
+
+        <button (click)="studioMode.set('dom-achievement'); drawCanvas()" 
+          [class]="studioMode() === 'dom-achievement' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-600/30 border-purple-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 min-w-[80px]">
+          <span class="text-xl mb-1">🏆</span>
+          <span class="text-[10px] font-bold">Creative Suite</span>
+          <span class="text-[10px] text-purple-400 mt-0.5">Achievement</span>
+        </button>
+
+        <button (click)="studioMode.set('dom-spotlight'); drawCanvas()" 
+          [class]="studioMode() === 'dom-spotlight' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/30 border-blue-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 min-w-[80px]">
+          <span class="text-xl mb-1">🔦</span>
+          <span class="text-[10px] font-bold">Creative Suite</span>
+          <span class="text-[10px] text-blue-400 mt-0.5">Spotlight</span>
+        </button>
+
+        <button (click)="studioMode.set('dom-journey'); drawCanvas()" 
+          [class]="studioMode() === 'dom-journey' ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg shadow-orange-600/30 border-orange-500' : 'bg-slate-800/80 hover:bg-slate-800 text-gray-300 border-slate-700/60'"
+          class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 min-w-[80px]">
+          <span class="text-xl mb-1">📖</span>
+          <span class="text-[10px] font-bold">Creative Suite</span>
+          <span class="text-[10px] text-orange-400 mt-0.5">Journey</span>
+        </button>
+
       </div>
     </div>
 
@@ -162,7 +189,7 @@
       </div>
 
       <!-- Theme Presets -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2" *ngIf="renderEngine() !== 'dom'">
         <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-1">Presets:</span>
         <button *ngFor="let p of presets" (click)="applyPreset(p)" class="px-2.5 py-1.5 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-700 transition-colors">
           {{p.name}}
@@ -173,6 +200,19 @@
         <button (click)="loadCustomPreset()" class="px-2.5 py-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 rounded-lg text-xs font-medium border border-blue-500/30 transition-colors" title="Load saved colors">
           📂 Load
         </button>
+      </div>
+
+      <!-- Mood Profiles (Phase 2 - Creative Engine) -->
+      <div class="flex items-center gap-2" *ngIf="renderEngine() === 'dom'">
+        <span class="text-xs font-semibold text-teal-400 uppercase tracking-wider mr-1">Creative Mood:</span>
+        <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-1 max-w-[800px]">
+          <button *ngFor="let mood of creativeEngine.allMoods" 
+                  (click)="creativeEngine.setMood(mood.id); drawCanvas()" 
+                  [class]="creativeEngine.currentMoodId() === mood.id ? 'bg-teal-600 text-white border-teal-500' : 'bg-slate-800 text-gray-400 border-slate-700'"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors whitespace-nowrap">
+            {{mood.name}}
+          </button>
+        </div>
       </div>
 
       <!-- Reset / Undo -->
@@ -1632,7 +1672,7 @@
         </div>
         
         <div class="flex-1 p-8 flex items-center justify-center overflow-auto custom-scrollbar bg-slate-900/50">
-          <div class="relative transition-all duration-300" [ngStyle]="{
+          <div class="relative transition-all duration-300 flex items-center justify-center overflow-hidden" [ngStyle]="{
             'width': '100%', 
             'max-width': canvasFormat() === 'story' ? '400px' : (canvasFormat() === 'landscape' ? '750px' : (canvasFormat() === 'portrait' ? '500px' : '600px')),
             'aspect-ratio': canvasFormat() === 'story' ? '9/16' : (canvasFormat() === 'landscape' ? '16/9' : (canvasFormat() === 'portrait' ? '4/5' : '1/1'))
@@ -1650,72 +1690,40 @@
               [class.cursor-grabbing]="dragState.active"
             ></canvas>
 
-            <!-- DOM Engine (Phase 1 Integration) -->
+            <!-- DOM Engine (Phases 2-4 Integration) -->
+            <!-- The DOM engine container is explicitly sized to 1080p scale to ensure CSS font sizes and padding are accurate. We use CSS transform scale to fit it in the preview panel. -->
             <div *ngIf="renderEngine() === 'dom'" 
                  id="dom-render-target"
-                 class="w-full h-full shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden relative flex flex-col justify-between"
+                 class="shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden absolute top-1/2 left-1/2 flex flex-col"
                  [ngStyle]="{
+                   'width': canvasFormat() === 'landscape' ? '1920px' : '1080px',
+                   'height': canvasFormat() === 'story' ? '1920px' : (canvasFormat() === 'portrait' ? '1350px' : '1080px'),
+                   'transform': 'translate(-50%, -50%) scale(' + (canvasFormat() === 'story' ? (400 / 1080) : (canvasFormat() === 'landscape' ? (750 / 1920) : (canvasFormat() === 'portrait' ? (500 / 1080) : (600 / 1080)))) + ')',
                    'background': 'linear-gradient(135deg, ' + creativeEngine.currentMood().colors.backgroundStart + ', ' + creativeEngine.currentMood().colors.backgroundEnd + ')'
                  }">
                  
-                 <!-- Dynamic Noise Overlay -->
+                 <!-- Dynamic Noise Overlay (Global) -->
                  <div class="absolute inset-0 z-0 pointer-events-none opacity-50 mix-blend-overlay"
                       [ngStyle]="{'opacity': creativeEngine.currentMood().effects.noiseIntensity}"
                       style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
                  </div>
 
-                 <!-- Grid Overlay -->
+                 <!-- Grid Overlay (Global) -->
                  <div *ngIf="creativeEngine.currentMood().effects.showGrid" class="absolute inset-0 z-0 pointer-events-none opacity-10"
                       style="background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);">
                  </div>
 
-                 <!-- Content Area -->
-                 <div class="relative z-10 flex-1 flex flex-col items-center justify-center p-12 text-center">
-                   
-                   <h3 class="text-2xl font-bold tracking-[0.3em] mb-4" 
-                       [ngStyle]="{
-                         'color': creativeEngine.currentMood().colors.accent,
-                         'font-family': creativeEngine.currentMood().typography.fontFamilyBody
-                       }">
-                     MATCH RESULT
-                   </h3>
-                   
-                   <h1 class="text-7xl mb-6 leading-tight"
-                       [ngStyle]="{
-                         'color': creativeEngine.currentMood().colors.primary,
-                         'font-family': creativeEngine.currentMood().typography.fontFamilyTitle,
-                         'font-weight': creativeEngine.currentMood().typography.titleWeight,
-                         'text-transform': creativeEngine.currentMood().typography.titleTransform
-                       }">
-                     {{ mainTitle() || 'VICTORY SECURED' }}
-                   </h1>
-
-                   <p class="text-xl max-w-2xl mx-auto"
+                 <!-- Hero Image Overlay (Global if enabled) -->
+                 <div class="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen" *ngIf="heroImage"
                       [ngStyle]="{
-                        'color': creativeEngine.currentMood().colors.textSecondary,
-                        'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                        'background-image': 'url(' + (heroRemoveBackground() ? filteredHeroUrl : heroImage.src) + ')',
+                        'background-size': 'cover',
+                        'background-position': 'center'
                       }">
-                     {{ subtitle() || 'Pushing the boundaries of performance and securing our place at the top of the podium.' }}
-                   </p>
-
-                   <!-- Glassmorphism Card -->
-                   <div *ngIf="creativeEngine.currentMood().effects.glassmorphism" 
-                        class="mt-12 p-8 rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 flex gap-8">
-                     <div class="text-center">
-                       <div class="text-4xl font-black text-white" [ngStyle]="{'font-family': creativeEngine.currentMood().typography.fontFamilyTitle}">1ST</div>
-                       <div class="text-sm font-medium tracking-widest uppercase mt-1" [ngStyle]="{'color': creativeEngine.currentMood().colors.accent}">OVERALL</div>
-                     </div>
-                     <div class="w-px bg-white/10"></div>
-                     <div class="text-center">
-                       <div class="text-4xl font-black text-white" [ngStyle]="{'font-family': creativeEngine.currentMood().typography.fontFamilyTitle}">94.5</div>
-                       <div class="text-sm font-medium tracking-widest uppercase mt-1" [ngStyle]="{'color': creativeEngine.currentMood().colors.accent}">POINTS</div>
-                     </div>
-                   </div>
-
                  </div>
 
-                 <!-- Footer -->
-                 <div class="relative z-10 w-full p-8 flex justify-between items-end">
+                 <!-- Footer (Global) -->
+                 <div class="absolute bottom-0 left-0 right-0 z-20 w-full p-8 flex justify-between items-end pointer-events-none">
                    <div class="text-sm font-bold tracking-[0.2em] opacity-50" [ngStyle]="{'color': creativeEngine.currentMood().colors.textPrimary}">
                      WWW.TRACERSMEC.COM
                    </div>
@@ -1723,7 +1731,198 @@
                      TR
                    </div>
                  </div>
-                 
+
+                 <ng-container [ngSwitch]="studioMode()">
+                   <!-- ============================================== -->
+                   <!-- dom-victory -->
+                   <!-- ============================================== -->
+                   <div *ngSwitchCase="'dom-victory'" class="relative z-10 flex-1 flex flex-col items-center justify-center p-12 text-center h-full">
+                     <h3 class="text-2xl font-bold tracking-[0.3em] mb-4" 
+                         [ngStyle]="{
+                           'color': creativeEngine.currentMood().colors.accent,
+                           'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                         }">
+                       MATCH RESULT
+                     </h3>
+                     <h1 class="text-7xl mb-6 leading-tight drop-shadow-2xl"
+                         [ngStyle]="{
+                           'color': creativeEngine.currentMood().colors.primary,
+                           'font-family': creativeEngine.currentMood().typography.fontFamilyTitle,
+                           'font-weight': creativeEngine.currentMood().typography.titleWeight,
+                           'text-transform': creativeEngine.currentMood().typography.titleTransform
+                         }">
+                       {{ mainTitle() || 'VICTORY SECURED' }}
+                     </h1>
+                     <p class="text-xl max-w-2xl mx-auto"
+                        [ngStyle]="{
+                          'color': creativeEngine.currentMood().colors.textSecondary,
+                          'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                        }">
+                       {{ subtitle() || 'Pushing the boundaries of performance and securing our place at the top of the podium.' }}
+                     </p>
+                     <!-- Glassmorphism Card -->
+                     <div *ngIf="creativeEngine.currentMood().effects.glassmorphism" 
+                          class="mt-12 p-8 rounded-2xl border border-white/10 backdrop-blur-xl bg-white/10 shadow-2xl flex gap-8">
+                       <div class="text-center">
+                         <div class="text-5xl font-black text-white drop-shadow-lg" [ngStyle]="{'font-family': creativeEngine.currentMood().typography.fontFamilyTitle}">1ST</div>
+                         <div class="text-sm font-medium tracking-widest uppercase mt-2" [ngStyle]="{'color': creativeEngine.currentMood().colors.accent}">OVERALL</div>
+                       </div>
+                       <div class="w-px bg-white/20"></div>
+                       <div class="text-center">
+                         <div class="text-5xl font-black text-white drop-shadow-lg" [ngStyle]="{'font-family': creativeEngine.currentMood().typography.fontFamilyTitle}">94.5</div>
+                         <div class="text-sm font-medium tracking-widest uppercase mt-2" [ngStyle]="{'color': creativeEngine.currentMood().colors.accent}">POINTS</div>
+                       </div>
+                     </div>
+                   </div>
+
+                   <!-- ============================================== -->
+                   <!-- dom-achievement -->
+                   <!-- ============================================== -->
+                   <div *ngSwitchCase="'dom-achievement'" class="relative z-10 flex-1 flex flex-col justify-center p-16 h-full text-left">
+                     <div class="max-w-3xl">
+                       <h3 class="text-3xl font-bold mb-4 border-l-4 pl-4" 
+                           [ngStyle]="{
+                             'color': creativeEngine.currentMood().colors.accent,
+                             'border-color': creativeEngine.currentMood().colors.primary,
+                             'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                           }">
+                         ACHIEVEMENT UNLOCKED
+                       </h3>
+                       <h1 class="text-6xl sm:text-8xl mb-8 leading-none"
+                           [ngStyle]="{
+                             'color': creativeEngine.currentMood().colors.primary,
+                             'font-family': creativeEngine.currentMood().typography.fontFamilyTitle,
+                             'font-weight': creativeEngine.currentMood().typography.titleWeight,
+                             'text-transform': creativeEngine.currentMood().typography.titleTransform
+                           }">
+                         {{ mainTitle() || 'ENGINEERING EXCELLENCE' }}
+                       </h1>
+                       
+                       <div class="flex flex-col gap-6 mt-12">
+                         <div *ngFor="let item of achievementsList()" class="flex items-center gap-4 bg-black/40 p-4 rounded-xl backdrop-blur-md border border-white/5">
+                           <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                                [ngStyle]="{'background-color': creativeEngine.currentMood().colors.accent}">
+                             ✓
+                           </div>
+                           <div class="text-2xl font-semibold"
+                                [ngStyle]="{
+                                  'color': creativeEngine.currentMood().colors.textPrimary,
+                                  'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                                }">
+                             {{ item.text }}
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+
+                   <!-- ============================================== -->
+                   <!-- dom-spotlight -->
+                   <!-- ============================================== -->
+                   <div *ngSwitchCase="'dom-spotlight'" class="relative z-10 flex-1 flex flex-col h-full items-end justify-center text-right p-16">
+                     <div class="max-w-2xl">
+                        <!-- Huge glowing text behind subject -->
+                        <div class="text-[12rem] font-black absolute top-1/2 left-4 -translate-y-1/2 opacity-5 pointer-events-none whitespace-nowrap"
+                             [ngStyle]="{
+                               'color': creativeEngine.currentMood().colors.primary,
+                               'font-family': creativeEngine.currentMood().typography.fontFamilyTitle
+                             }">
+                             {{ mainTitle() }}
+                        </div>
+                        
+                        <h1 class="text-7xl mb-4 leading-tight drop-shadow-xl"
+                            [ngStyle]="{
+                              'color': creativeEngine.currentMood().colors.textPrimary,
+                              'font-family': creativeEngine.currentMood().typography.fontFamilyTitle,
+                              'font-weight': creativeEngine.currentMood().typography.titleWeight,
+                              'text-transform': creativeEngine.currentMood().typography.titleTransform
+                            }">
+                          {{ mainTitle() || 'MOHAMED SHAMS' }}
+                        </h1>
+                        <h3 class="text-3xl font-bold tracking-[0.2em] mb-8" 
+                            [ngStyle]="{
+                              'color': creativeEngine.currentMood().colors.accent,
+                              'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                            }">
+                          {{ subtitle() || 'TEAM CAPTAIN' }}
+                        </h3>
+                        
+                        <div class="inline-block p-6 rounded-xl backdrop-blur-lg border border-white/10"
+                             [ngStyle]="{'background-color': 'rgba(0,0,0,0.6)'}">
+                          <p class="text-lg italic"
+                             [ngStyle]="{
+                               'color': creativeEngine.currentMood().colors.textSecondary,
+                               'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                             }">
+                            "{{ paragraphText() || 'Pushing the team to new heights through relentless innovation and a passion for motorsport engineering.' }}"
+                          </p>
+                        </div>
+                     </div>
+                   </div>
+                   <!-- ============================================== -->
+                   <!-- dom-journey -->
+                   <!-- ============================================== -->
+                   <div *ngSwitchCase="'dom-journey'" class="relative z-10 flex flex-col h-full items-center justify-center p-12 w-full">
+                      <!-- Progress Timeline Indicator -->
+                      <div class="absolute top-12 left-12 right-12 flex items-center justify-between pointer-events-none">
+                         <div class="h-1 bg-white/20 flex-1 relative rounded-full">
+                           <div class="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-transparent to-white w-2/3 rounded-full"></div>
+                         </div>
+                      </div>
+
+                      <div class="flex w-full h-full gap-8 items-center justify-center mt-8">
+                         <!-- Left Text Content -->
+                         <div class="flex-1 flex flex-col justify-center text-left">
+                            <h3 class="text-2xl font-bold tracking-[0.3em] mb-4 uppercase" 
+                                [ngStyle]="{
+                                  'color': creativeEngine.currentMood().colors.accent,
+                                  'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                                }">
+                              {{ journeyHeadline() || 'JOURNEY' }}
+                            </h3>
+                            <h1 class="text-6xl sm:text-7xl mb-6 leading-tight drop-shadow-xl"
+                                [ngStyle]="{
+                                  'color': creativeEngine.currentMood().colors.primary,
+                                  'font-family': creativeEngine.currentMood().typography.fontFamilyTitle,
+                                  'font-weight': creativeEngine.currentMood().typography.titleWeight,
+                                  'text-transform': creativeEngine.currentMood().typography.titleTransform
+                                }">
+                              {{ mainTitle() || 'THE STORY CONTINUES' }}
+                            </h1>
+                            <p class="text-xl max-w-xl leading-relaxed"
+                               [ngStyle]="{
+                                 'color': creativeEngine.currentMood().colors.textSecondary,
+                                 'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                                }">
+                              {{ journeySubtext() || 'A milestone reached is just a new starting point.' }}
+                            </p>
+                         </div>
+
+                         <!-- Right Stats Panel -->
+                         <div class="flex-1 grid grid-cols-2 gap-4">
+                            <div *ngFor="let stat of journeyStats()" class="p-6 rounded-2xl backdrop-blur-xl border border-white/10 flex flex-col items-center justify-center text-center transition-all hover:scale-105"
+                                 [ngStyle]="{'background-color': 'rgba(255,255,255,0.03)'}">
+                               <div class="text-5xl font-black mb-2 drop-shadow-md"
+                                    [ngStyle]="{
+                                      'color': creativeEngine.currentMood().colors.primary,
+                                      'font-family': creativeEngine.currentMood().typography.fontFamilyTitle
+                                    }">
+                                  {{ stat.value }}
+                               </div>
+                               <div class="text-sm font-bold tracking-widest uppercase opacity-80"
+                                    [ngStyle]="{
+                                      'color': creativeEngine.currentMood().colors.textPrimary,
+                                      'font-family': creativeEngine.currentMood().typography.fontFamilyBody
+                                    }">
+                                  {{ stat.label }}
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                   
+                 </ng-container>
+
             </div>
 
           </div>
